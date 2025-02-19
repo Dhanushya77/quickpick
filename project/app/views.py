@@ -49,16 +49,19 @@ def admin_home(req):
 
     return render(req,'admin/home.html')
 
+
+
 def category(req):
-    if req.method=='POST':
-        category=req.POST['category']
-        img=req.file.get('img')
-        data= Category.objects.create(category=category,img=img)
-        data.save()
-        return redirect(view_category)
-    else:
-        data=Category.objects.all()
-        return render(req,'admin/category.html',{'data':data})
+    if req.method == 'POST':
+        category_name = req.POST['category']
+        img = req.FILES.get('img') 
+
+        if category_name and img: 
+            Category.objects.create(category=category_name, img=img)
+            return redirect(view_category)
+        return render(req, 'admin/category.html', {'error': 'Both category name and image are required.'})
+
+    return render(req, 'admin/category.html')
 
 
 def view_category(req):

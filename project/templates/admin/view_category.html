@@ -4,8 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/view_cat_style.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-    <a href="category">add </a>
+
+    <table class="table table-hover mt-5 mb-5 mx-auto">
+        <thead>
+            <tr class="table-danger">
+                <th scope="col"></th>
+                <th scope="col" class="text-light">CATEGORIES</th>
+                <th scope="col"></th>
+                <th scope="col"><a style="color: white;" href="../category"><i class="fas fa-plus-circle"></i> Click here to add more</a></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for i in category %}
+            <tr>
+                <th scope="row">{{ i.pk }}</th>
+                <td>{{ i.category }}</td>
+                <td><a href="view_products/{{i.pk }}">View products</a></td>
+                <td><a href="delete_category/{{ i.pk }}">Delete</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-4">
+        <a href="../admin_home" class="btn btn-danger">Go back</a>
+    </div>
+
 </body>
 </html>
