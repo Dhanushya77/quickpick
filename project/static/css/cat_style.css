@@ -27,7 +27,7 @@ h1 {
 
 
 .input1, .input2 {
-    width:51vw;
+    width:100%;
     padding: 12px 15px;
     font-size: 16px;
     margin: 10px 0;
@@ -44,10 +44,11 @@ h1 {
 input[type="file"] {
     padding: 12px;
     font-size: 12px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    background-color: #fafafa;
-    width: 48vw;
+    /* border-radius: 5px; */
+    /* border: 1px solid #ccc; */
+    /* background-color: #fafafa; */
+    width: 100%;
+    
 }
 
 .input2 {
@@ -61,6 +62,27 @@ input[type="file"] {
 .input2:hover {
     background-color: #e07b00; 
 }
+
+.btn-danger {
+    background-color: #ff8800;
+    border: none;
+    padding: 10px 20px;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 5px;
+}
+
+.btn-danger:hover {
+    background-color: #e07b00;
+}
+
+
+.mt-4 {
+    text-align: right;
+    margin-right: 200px;
+}
+
 
 @media (max-width: 768px) {
     .main {

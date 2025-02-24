@@ -74,6 +74,39 @@ def delete_category(req,id):
     data.delete()
     return redirect(view_category)
 
+def add_pro(req):
+    categories = Category.objects.all()
+    if req.method == "POST":
+        category = Category.objects.get(id=req.POST['category'])
+        profile = req.FILES.get("profile")
+        name = req.POST.get("name")
+        phone = req.POST.get("phone")
+        experience = req.POST.get("experience")
+        availability = req.POST.get("availability") == "on"
+        rating = req.POST.get("rating", 0.0)
+        location = req.POST.get("location")
+        des = req.POST.get("des")
+        charge = req.POST.get("charge")
+        working_hours = req.POST.get("working_hours")
+        
+        
+        ServiceProvider.objects.create(
+            category=category,
+            profile=profile,
+            name=name,
+            phone=phone,
+            experience=experience,
+            availability=availability,
+            rating=rating,
+            location=location,
+            des=des,
+            charge=charge,
+            working_hours=working_hours,
+        )
+        return redirect(admin_home)
+    else:
+        categories = Category.objects.all()
+        return render(req, "admin/add_pro.html", {"categories": categories})
 
 #-----------------service providers--------------------
 def service_home(req):
