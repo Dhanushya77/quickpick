@@ -39,16 +39,45 @@
           <a class="nav-link active" href="add_pro">Add Service Provider</a>
         </li>
         <li class="nav-item">
+          <a class="nav-link active" href="edit_pro/{{Provider.pk}}">edit Service Provider</a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link" href="view_category">Category</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="logout">Logout</a>
         </li>
       </ul>
-
-
     </div>
   </nav>
+ 
+    
+  <div class="container">
+    {% if providers %}
+        {% for provider in providers %}
+            <div class="provider-card">
+                <img src="{{ provider.profile.url }}" alt="{{ provider.name }}">
+                <div class="provider-card-content">
+                    <h3>{{ provider.name }}</h3>
+                    <p class="category">Category: {{ provider.category.name }}</p>
+                    <p>Phone: {{ provider.phone }}</p>
+                    <p>Experience: {{ provider.experience }} years</p>
+                    <p>Location: {{ provider.location }}</p>
+                    <p>Rating: {{ provider.rating }} / 5</p>
+                    <p class="charge">Charge: ${{ provider.charge }}</p>
+
+                    <div class="btn-container">
+                        <a href="edit_pro/{{provider.id}}" class="btn">Edit</a>
+                        <a href="#" class="btn">Delete</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p style="text-align: center; width: 100%; font-size: 18px;">No providers available at the moment.</p>
+    {% endif %}
+</div>
+
 
 </body>
 

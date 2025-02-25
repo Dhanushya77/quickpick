@@ -11,5 +11,5 @@ urlpatterns = [
     path('view_category',views.view_category),
     path('delete_category/<id>',views.delete_category),
     path('add_pro',views.add_pro),
-
+    path('edit_pro/<pid>',views.edit_pro),
 ]

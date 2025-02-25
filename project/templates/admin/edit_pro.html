@@ -1,90 +1,105 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add Service Provider</title>
+    <title>Edit Service Provider</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/edit_pro_style.css' %}">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </head>
+
 <body>
     <div class="container">
-        <h1>Add Service Provider</h1>
+        <h1>Edit Service Provider</h1>
         <div class="form-container">
             <form action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
+
                 
                 <div class="product-form-wrapper">
                     <div class="col-md-6">
                         <label for="category">Category:</label>
                         <select name="category" class="input3" required>
                             {% for i in categories %}
-                                <option value="{{ i.id }}">{{ i.category }}</option>
+                                <option value="{{ i.id }}" {% if i.id == service_provider.category_id %}selected{% endif %}>{{ i.category }}</option>
                             {% endfor %}
                         </select>
                     </div>
 
+                    
                     <div class="col-md-6">
                         <label for="name">Full Name:</label>
-                        <input type="text" name="name" class="input3" required>
+                        <input type="text" name="name" class="input3" value="{{ service_provider.name }}" required>
                     </div>
 
+                    
                     <div class="col-md-6">
                         <label for="phone">Phone Number:</label>
-                        <input type="number" name="phone" class="input3" required>
+                        <input type="number" name="phone" class="input3" value="{{ service_provider.phone }}" required>
                     </div>
 
+                    
                     <div class="col-md-6">
                         <label for="experience">Experience (years):</label>
-                        <input type="number" name="experience" class="input3" required>
+                        <input type="number" name="experience" class="input3" value="{{ service_provider.experience }}" required>
                     </div>
 
+                    
                     <div class="col-md-6">
                         <label for="profile">Profile Picture:</label>
-                        <input type="file" name="profile" class="input3" accept="image/*" required>
+                        <input type="file" name="profile" class="input3" accept="image/*">
+                        {% if service_provider.profile %}
+                            <img src="{{ service_provider.profile.url }}" alt="Profile Picture" class="product-image mt-2">
+                        {% endif %}
                     </div>
 
+                
                     <div class="col-md-6">
                         <label for="location">Location:</label>
-                        <input type="text" name="location" class="input3" required>
+                        <input type="text" name="location" class="input3" value="{{ service_provider.location }}" required>
                     </div>
 
                     <div class="col-md-6">
                         <label for="des">Description:</label>
-                        <textarea name="des" class="input3" rows="3" required></textarea>
+                        <textarea name="des" class="input3" rows="3" required>{{ service_provider.description }}</textarea>
                     </div>
 
+                   
                     <div class="col-md-6">
                         <label for="charge">Service Charge (per hour):</label>
-                        <input type="number"  name="charge" class="input3" required>
+                        <input type="number" step="0.01" name="charge" class="input3" value="{{ service_provider.charge }}" required>
                     </div>
 
+                 
                     <div class="col-md-6">
                         <label for="working_hours">Working Hours:</label>
-                        <input type="text" name="working_hours" class="input3" required>
+                        <input type="text" name="working_hours" class="input3" value="{{ service_provider.working_hours }}" required>
                     </div>
 
                     <div class="col-md-6">
                         <label for="availability">Availability:</label>
                         <select name="availability" class="input3" required>
-                            <option value="True">Available</option>
-                            <option value="False">Not Available</option>
+                            <option value="True" {% if service_provider.availability == 'True' %}selected{% endif %}>Available</option>
+                            <option value="False" {% if service_provider.availability == 'False' %}selected{% endif %}>Not Available</option>
                         </select>
                     </div>
 
+                   
                     <div class="col-md-6">
                         <label for="rating">Rating:</label>
-                        <input type="number" step="0.1" name="rating" class="input3" value="0.0" required>
+                        <input type="number" step="0.1" name="rating" class="input3" value="{{ service_provider.rating }}" required>
                     </div>
                 </div>
 
-                <input type="submit" value="Add Service Provider">
+                
+                <input type="submit" value="Update Service Provider">
             </form>
         </div>
     </div>
 </body>
+
 </html>

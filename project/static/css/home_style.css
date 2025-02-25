@@ -54,3 +54,110 @@
     background-color: #ff8800 !important;
     color: white !important;
 }
+
+<style>
+/* Global styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 30px;
+    color: #333;
+}
+
+.container {
+    width: 90%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.provider-card {
+    background-color: #fff;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 15px;
+    width: calc(33% - 30px); /* 3 cards per row */
+    transition: transform 0.3s ease;
+    text-align: center;
+}
+
+.provider-card:hover {
+    transform: translateY(-10px);
+}
+
+.provider-card img {
+    width: 200px; /* Portrait aspect ratio */
+    height: 300px;
+    object-fit: cover;
+    border-bottom: 2px solid #ff8800;
+    margin-top: 20px;
+}
+
+.provider-card-content {
+    padding: 20px;
+    background-color: #fff;
+    color: #333;
+}
+
+.provider-card-content h3 {
+    color: #333;
+    margin: 0 0 10px;
+}
+
+.provider-card-content p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.provider-card-content .category {
+    font-weight: bold;
+    color: #ff8800;
+}
+
+.provider-card-content .charge {
+    font-weight: bold;
+    color: #ff8800;
+}
+
+.provider-card-content .btn-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 15px;
+}
+
+.provider-card-content .btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    text-decoration: none;
+    color: white;
+    background-color: #ff8800;
+    transition: background-color 0.3s ease;
+}
+
+.provider-card-content .btn:hover {
+    background-color: #e87e00;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+    .provider-card {
+        width: calc(50% - 30px); /* 2 cards per row */
+    }
+}
+
+@media (max-width: 768px) {
+    .provider-card {
+        width: 100%; /* 1 card per row */
+    }
+}
+</style>

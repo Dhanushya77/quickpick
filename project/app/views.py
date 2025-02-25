@@ -46,8 +46,8 @@ def dummy_home(req):
 # --------------------admin----------------------------
 
 def admin_home(req):
-
-    return render(req,'admin/home.html')
+    providers = ServiceProvider.objects.all()
+    return render(req,'admin/home.html',{'providers':providers})
 
 
 
@@ -107,11 +107,45 @@ def add_pro(req):
     else:
         categories = Category.objects.all()
         return render(req, "admin/add_pro.html", {"categories": categories})
+    
+def edit_pro(req, pid):
+    try:
+        provider = ServiceProvider.objects.get(id=pid)
+    except ServiceProvider.DoesNotExist:
+       
+        return redirect('error_page') 
+    categories = Category.objects.all()
+    
+    if req.method == "POST":
+        category = Category.objects.get(id=req.POST['category'])
+        profile = req.FILES.get("profile", provider.profile) 
+        name = req.POST.get("name", provider.name)
+        phone = req.POST.get("phone", provider.phone)
+        experience = req.POST.get("experience", provider.experience)
+        availability = req.POST.get("availability", "on") == "on"  
+        rating = req.POST.get("rating", provider.rating)  
+        location = req.POST.get("location", provider.location)
+        des = req.POST.get("des", provider.des)
+        charge = req.POST.get("charge", provider.charge)
+        working_hours = req.POST.get("working_hours", provider.working_hours)
+        
+        provider.category = category
+        provider.profile = profile
+        provider.name = name
+        provider.phone = phone
+        provider.experience = experience
+        provider.availability = availability
+        provider.rating = rating
+        provider.location = location
+        provider.des = des
+        provider.charge = charge
+        provider.working_hours = working_hours
+        provider.save()        
+        return redirect('admin_home') 
+    
+    else:
+        return render(req, "admin/edit_pro.html", {"provider": provider, "categories": categories})
 
-#-----------------service providers--------------------
-def service_home(req):
-
-    return render(req,'service/home.html')
 
 # ---------------------user----------------------------
 
