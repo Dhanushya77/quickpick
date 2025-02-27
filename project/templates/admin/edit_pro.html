@@ -25,7 +25,7 @@
                         <label for="category">Category:</label>
                         <select name="category" class="input3" required>
                             {% for i in categories %}
-                                <option value="{{ i.id }}" {% if i.id == service_provider.category_id %}selected{% endif %}>{{ i.category }}</option>
+                                <option value="{{ i.id }}" {% if i.id == provider.category_id %}selected{% endif %}>{{ i.category }}</option>
                             {% endfor %}
                         </select>
                     </div>
@@ -33,65 +33,67 @@
                     
                     <div class="col-md-6">
                         <label for="name">Full Name:</label>
-                        <input type="text" name="name" class="input3" value="{{ service_provider.name }}" required>
+                        <input type="text" name="name" class="input3" value="{{ provider.name }}" required>
                     </div>
 
                     
                     <div class="col-md-6">
                         <label for="phone">Phone Number:</label>
-                        <input type="number" name="phone" class="input3" value="{{ service_provider.phone }}" required>
+                        <input type="number" name="phone" class="input3" value="{{ provider.phone }}" required>
                     </div>
 
                     
                     <div class="col-md-6">
                         <label for="experience">Experience (years):</label>
-                        <input type="number" name="experience" class="input3" value="{{ service_provider.experience }}" required>
+                        <input type="number" name="experience" class="input3" value="{{ provider.experience }}" required>
                     </div>
 
                     
                     <div class="col-md-6">
-                        <label for="profile">Profile Picture:</label>
-                        <input type="file" name="profile" class="input3" accept="image/*">
-                        {% if service_provider.profile %}
-                            <img src="{{ service_provider.profile.url }}" alt="Profile Picture" class="product-image mt-2">
-                        {% endif %}
+                        <label for="profile">Profile Picture:</label><br><br>
+                        <div class="d-flex">
+                       {% if provider.profile %}
+                            <img style="border-radius: 50%; margin-right: 10px;;" src="{{ provider.profile.url }}" alt="Profile Picture" class="product-image " width="120px" height="120px">
+                        {% endif %}  
+                         <input type="file" name="profile" class="input3 aa" accept="image/*">
+                        </div>
                     </div>
 
                 
                     <div class="col-md-6">
                         <label for="location">Location:</label>
-                        <input type="text" name="location" class="input3" value="{{ service_provider.location }}" required>
+                        <input type="text" name="location" class="input3" value="{{ provider.location }}" required>
                     </div>
 
                     <div class="col-md-6">
                         <label for="des">Description:</label>
-                        <textarea name="des" class="input3" rows="3" required>{{ service_provider.description }}</textarea>
+                        <textarea name="des" class="input3" rows="3" required>{{ provider.description }}</textarea>
                     </div>
 
                    
                     <div class="col-md-6">
                         <label for="charge">Service Charge (per hour):</label>
-                        <input type="number" step="0.01" name="charge" class="input3" value="{{ service_provider.charge }}" required>
+                        <input type="number" step="0.01" name="charge" class="input3" value="{{ provider.charge }}" required>
                     </div>
 
                  
                     <div class="col-md-6">
                         <label for="working_hours">Working Hours:</label>
-                        <input type="text" name="working_hours" class="input3" value="{{ service_provider.working_hours }}" required>
+                        <input type="text" name="working_hours" class="input3" value="{{ provider.working_hours }}" required>
                     </div>
 
                     <div class="col-md-6">
                         <label for="availability">Availability:</label>
                         <select name="availability" class="input3" required>
-                            <option value="True" {% if service_provider.availability == 'True' %}selected{% endif %}>Available</option>
-                            <option value="False" {% if service_provider.availability == 'False' %}selected{% endif %}>Not Available</option>
+                            <option value="True" {% if provider.availability == 'True' %}selected{% endif %}>Available</option>
+                            <option value="False" {% if provider.availability == 'False' %}selected{% endif %}>Not Available</option>
                         </select>
                     </div>
 
                    
                     <div class="col-md-6">
                         <label for="rating">Rating:</label>
-                        <input type="number" step="0.1" name="rating" class="input3" value="{{ service_provider.rating }}" required>
+                        <input type="number" step="0.1" name="rating" class="input3" value="{{ provider.rating }}" required>
                     </div>
                 </div>
 

@@ -20,3 +20,7 @@ class ServiceProvider(models.Model):
     des = models.TextField()
     charge = models.FloatField()
     working_hours = models.TextField()
+    
+class Otp(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    otp=models.TextField()

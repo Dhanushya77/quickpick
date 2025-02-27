@@ -4,6 +4,10 @@ from django.contrib import messages
 from.models import *
 import os
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.conf import settings
+import random
+
 # Create your views here.
 
 def user_login(req):
@@ -141,13 +145,65 @@ def edit_pro(req, pid):
         provider.charge = charge
         provider.working_hours = working_hours
         provider.save()        
-        return redirect('admin_home') 
+        return redirect(admin_home) 
     
     else:
         return render(req, "admin/edit_pro.html", {"provider": provider, "categories": categories})
 
+def delete_pro(req,pid):
+    data=ServiceProvider.objects.get(pk=pid)
+    file=data.profile.url
+    file=file.split('/')[-1]
+    os.remove('media/'+file)
+    data.delete()
+    return redirect(admin_home)
 
 # ---------------------user----------------------------
+def register(req):
+    if req.method == 'POST':
+        uname = req.POST['uname']
+        email = req.POST['email']
+        pswrd = req.POST['pswrd']
+        try:
+            data = User.objects.create_user(first_name=uname, email=email, username=email, password=pswrd)
+            data.save()
+            otp = ""
+            for i in range(6):
+                otp += str(random.randint(0, 9))
+            msg = f'Your registration is completed otp: {otp}'
+            otp = Otp.objects.create(user=data, otp=otp)
+            otp.save()
+            send_mail('Registration', msg, settings.EMAIL_HOST_USER, [email])
+            messages.success(req, "Registration successful. Please check your email for OTP.")
+            return redirect(otp_confirmation)
+        except:
+            messages.warning(req, 'Email already exists')
+            return redirect(register)
+    else:
+        return render(req, 'register.html')
+
+    
+def otp_confirmation(req):
+    if req.method == 'POST':
+        uname = req.POST.get('uname')
+        user_otp = req.POST.get('otp')
+        try:
+            user = User.objects.get(username=uname)
+            generated_otp = Otp.objects.get(user=user)
+    
+            if generated_otp.otp == user_otp:
+                generated_otp.delete()
+                return redirect(user_login)
+            else:
+                messages.warning(req, 'Invalid OTP')
+                return redirect(otp_confirmation)
+        except User.DoesNotExist:
+            messages.warning(req, 'User does not exist')
+            return redirect(otp_confirmation)
+        except Otp.DoesNotExist:
+            messages.warning(req, 'OTP not found or expired')
+            return redirect(otp_confirmation)
+    return render(req, 'otp.html')
 
 def user_home(req):
 

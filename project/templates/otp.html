@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Confirmation</title>
+    <link rel="stylesheet" href="{% static 'css/otp_style.css' %}">  
+</head>
+<body>
+
+    <div class="container">
+        <div class="main">
+            <h1>OTP Confirmation</h1>
+            <form action="" method="post">
+                {% csrf_token %}
+                <input type="email" name="uname" class="input" placeholder="Enter Email ID" required><br>
+                <input type="text" name="otp" class="input" placeholder="Enter 6-digit OTP" required><br>
+                <input type="submit" value="Submit" class="input1">
+            </form>
+        </div>
+    </div>
+
+    <div class="sub">
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible">
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            <strong>Warning!</strong> {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+    </div>
+
+</body>
+</html>
