@@ -40,7 +40,9 @@ body {
 }
 
 .form-control {
-    width: 100%;
+    width: 85% !important;
+    height: 6vh;
+    margin: auto !important;
     padding: 15px;
     margin: 10px 0;
     border: 1px solid #ccc;
@@ -67,7 +69,9 @@ ul.req li {
 }
 
 .btn {
-    width: 100%;
+    width: 85% !important;
+    height: 6vh;
+    margin: auto !important;
     padding: 15px;
     margin: 20px 0;
     border: none;
@@ -94,14 +98,14 @@ a:hover {
 
 .alert {
     background-color: #f8d7da;
-    color: #721c24;
+    color:#ff8800;
     border-radius: 5px;
     padding: 15px;
     font-size: 1rem;
 }
 
 .alert .btn-close {
-    background-color: #721c24;
+    background-color: #ff8800;
 }
 
 @media (max-width: 768px) {

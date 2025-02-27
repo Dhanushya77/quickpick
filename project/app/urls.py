@@ -6,6 +6,7 @@ urlpatterns = [
     path('login',views.user_login),
     path('logout',views.user_logout),
     path('register',views.register),
+    path('otp',views.otp_confirmation),
     # ---------------admin----------------
     path('admin_home',views.admin_home),
     path('category',views.category),
@@ -14,5 +15,8 @@ urlpatterns = [
     path('add_pro',views.add_pro),
     path('edit_pro/<pid>',views.edit_pro),
     path('delete_pro/<pid>',views.delete_pro),
+    
+    # ----------------user--------------------
+    path('user_home',views.user_home),
     
 ]

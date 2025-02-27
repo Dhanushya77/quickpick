@@ -26,7 +26,7 @@ document.getElementById("registerForm").addEventListener('submit', function (eve
         let passwordField = document.getElementById("pass");
         passwordField.parentNode.appendChild(messageContainer);
         messageContainer.classList.add('alert', 'alert-dismissible', 'fade', 'show');
-        messageContainer.style.backgroundColor = '#7e0e463b';
+        messageContainer.style.backgroundColor = '#ff8800';
         messageContainer.style.color = '#7e0e46';
         messageContainer.innerHTML = 'Please ensure your password meets all the criteria.<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>';
     }

@@ -72,6 +72,8 @@ def view_category(req):
     category=Category.objects.all()
     return render(req,'admin/view_category.html',{'category':category})
 
+def view_providers(req,pid):
+    return render(req)
 
 def delete_category(req,id):
     data=Category.objects.get(pk=id)
@@ -158,6 +160,8 @@ def delete_pro(req,pid):
     data.delete()
     return redirect(admin_home)
 
+
+
 # ---------------------user----------------------------
 def register(req):
     if req.method == 'POST':
@@ -206,6 +210,7 @@ def otp_confirmation(req):
     return render(req, 'otp.html')
 
 def user_home(req):
+    providers = ServiceProvider.objects.all()
+    return render(req,'user/home.html',{'providers':providers})
 
-    return render(req,'user/home.html')
-
+# view products in admin page
