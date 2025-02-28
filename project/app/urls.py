@@ -15,8 +15,10 @@ urlpatterns = [
     path('add_pro',views.add_pro),
     path('edit_pro/<pid>',views.edit_pro),
     path('delete_pro/<pid>',views.delete_pro),
+    path('view_service/<cid>/', views.view_service),
     
     # ----------------user--------------------
     path('user_home',views.user_home),
+    path('filter_by_location/', views.filter_by_location, name='filter_by_location'),
     
 ]

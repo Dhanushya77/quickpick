@@ -1,6 +1,6 @@
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #fef2f8 !important;
+    background-color:white !important;
     margin: 0;
     padding: 0;
 }
@@ -23,7 +23,7 @@ h1 {
 }
 
 .form-container {
-    background-color: #ff66001a;
+    background-color: white;
     padding: 40px;
     border-radius: 15px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);

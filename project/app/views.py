@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from.models import *
@@ -7,6 +7,9 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
 import random
+from django.http import JsonResponse
+from django.template.loader import render_to_string
+
 
 # Create your views here.
 
@@ -72,8 +75,16 @@ def view_category(req):
     category=Category.objects.all()
     return render(req,'admin/view_category.html',{'category':category})
 
-def view_providers(req,pid):
-    return render(req)
+def view_service(request, cid):
+    category = Category.objects.get(id=cid)
+    service_providers = ServiceProvider.objects.filter(category=category)
+    
+    return render(request, 'admin/view_products.html', {
+        'category': category,
+        'service_providers': service_providers,
+    })
+
+
 
 def delete_category(req,id):
     data=Category.objects.get(pk=id)
@@ -209,8 +220,17 @@ def otp_confirmation(req):
             return redirect(otp_confirmation)
     return render(req, 'otp.html')
 
-def user_home(req):
-    providers = ServiceProvider.objects.all()
-    return render(req,'user/home.html',{'providers':providers})
 
-# view products in admin page
+def user_home(request):
+    providers = ServiceProvider.objects.all()
+    locations = ServiceProvider.objects.values_list('location', flat=True).distinct()
+    locations = sorted(set(loc.capitalize() for loc in locations if loc))
+    print(locations)
+    
+
+    return render(request, 'user/home.html', {'providers': providers, 'locations': locations})
+
+def filter_by_location(request):
+    location = request.GET.get('location', None)
+    providers = ServiceProvider.objects.filter(location=location) if location else ServiceProvider.objects.all()
+    return render(request, 'partials/provider_list.html', {'providers': providers})
