@@ -18,7 +18,8 @@ urlpatterns = [
     path('view_service/<cid>/', views.view_service),
     
     # ----------------user--------------------
-    path('user_home',views.user_home),
+    path('user_home',views.user_home,name='user_home'),
     path('filter_by_location/', views.filter_by_location, name='filter_by_location'),
+     path('search_providers/', views.search_providers, name='search_providers'),
     
 ]
