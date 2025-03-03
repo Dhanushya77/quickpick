@@ -14,7 +14,7 @@
 
 /* Footer Sections */
 .footer-section {
-    margin-left:8vw;
+    margin-left:7vw;
     flex: 1;
     min-width: 250px;
     margin-bottom: 20px;
@@ -79,5 +79,6 @@
     
     .footer-section {
         min-width: 100%;
+        margin: 0;
     }
 }
