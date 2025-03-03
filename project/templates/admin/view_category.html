@@ -6,10 +6,42 @@
     <title>Document</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/view_cat_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cat_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/footer.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 <body>
+    <nav class="navbar navbar-expand-lg">
+        <img src="static/logo.png" alt="logo" width="80" height="80">
+        <a class="navbar-brand" href="#">QuickPick</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+    
+        <div class="collapse navbar-collapse" id="navbarNav">
+          
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="../../admin_home">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="add_pro">Add Service Provider</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="view_category">Category</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="admin_bookings">Manage Bookings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="logout">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
 
     <table class="table table-hover mt-5 mb-5 mx-auto">
         <thead>
@@ -44,6 +76,40 @@
     <div class="mt-4">
         <a href="../admin_home" class="btn btn-danger">Go back</a>
     </div>
-
+    <footer class="footer">
+        <div class="footer-section">
+            <div class="footer-logo">QuickPick</div>
+            <p>Providing the best services near you.</p>
+        </div>
+    
+        <div class="footer-section footer-links">
+            <h4>Quick Links</h4>
+            <a href="#">Home</a>
+            <a href="#">Services</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+        </div>
+    
+        <div class="footer-section footer-links">
+            <h4>Support</h4>
+            <a href="#">FAQs</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Policy</a>
+        </div>
+    
+        <div class="footer-section">
+            <h4>Follow Us</h4>
+            <div class="footer-social">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+    </footer>
+    
+    <div class="footer-bottom">
+        &copy; 2025 QuickPick. All rights reserved.
+    </div>
 </body>
 </html>

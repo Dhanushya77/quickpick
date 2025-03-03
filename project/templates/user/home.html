@@ -7,18 +7,17 @@
   <title>Local Service Finder</title>
   {% load static %}
   <link rel="stylesheet" href="{% static 'css/home_style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/footer.css' %}">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   <!-- --------------font------------------- -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Sigmar&display=swap" rel="stylesheet">
-
-
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 </head>
 
 <body>
-
   <nav class="navbar navbar-expand-lg">
     <img src="static/logo.png" alt="logo" width="80" height="80">
     <a class="navbar-brand" href="#">QuickPick</a>
@@ -29,39 +28,21 @@
 
     <div class="collapse navbar-collapse" id="navbarNav">
       <form class="d-flex">
-        <input class="form-control me-2" style="border-color: #ff8800;" type="search" id="searchBar" placeholder="Search..." aria-label="Search">
-        <button class="btn btn-outline-success" type="button" onclick="searchProviders()">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-          </svg>
-        </button>
+        <div class="search-wrapper">
+          <input class="form-control" type="search" id="searchBar" placeholder="Search..." aria-label="Search"/>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg>
+        </div>
       </form>
       
       <ul class="navbar-nav ms-auto">
-
         <li class="nav-item">
           <a class="nav-link active" href="#">Home</a>
         </li>
-
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="locationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <span id="selectedLocationText">Choose location</span>
-          </a>
-          <ul class="dropdown-menu" id="locationMenu" aria-labelledby="locationDropdown">
-            {% for location in locations %}
-            <li>
-              <button class="dropdown-item location-filter" data-location="{{ location }}">{{ location }}</button>
-            </li>
-            {% endfor %}
-          </ul>
-        </li>
-      
-
         <li class="nav-item">
-          <a class="nav-link active" href="#">Favourite</a>
+          <a class="nav-link active" href="viewWishlist">Wishlist</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href=""></a>
+          <a class="nav-link active" href="user_bookings">Bookings</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="logout">Logout</a>
@@ -73,136 +54,65 @@
   <div class="container" id="service-providers">
     {% include 'partials/provider_list.html' %}
   </div>
+  <footer class="footer">
+    <div class="footer-section">
+        <div class="footer-logo">QuickPick</div>
+        <p>Providing the best services near you.</p>
+    </div>
+
+    <div class="footer-section footer-links">
+        <h4>Quick Links</h4>
+        <a href="#">Home</a>
+        <a href="#">Services</a>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+    </div>
+
+    <div class="footer-section footer-links">
+        <h4>Support</h4>
+        <a href="#">FAQs</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Privacy Policy</a>
+    </div>
+
+    <div class="footer-section">
+        <h4>Follow Us</h4>
+        <div class="footer-social">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-linkedin"></i></a>
+        </div>
+    </div>
+</footer>
+
+<div class="footer-bottom">
+    &copy; 2025 QuickPick. All rights reserved.
+</div>
+
+  <!-- ------------- js ---------------- -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   
-<!-- ------------- js ---------------- -->
-
-<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-  $(document).ready(function () {
-    let selectedLocation = ""; 
-
-    attachLocationFilter();
-    attachSearchHandler();
-
-    function attachLocationFilter() {
-      $(".location-filter").off("click").on("click", function (e) {
-        e.preventDefault();
-        selectedLocation = $(this).data("location"); 
-        $("#selectedLocationText").text(selectedLocation); 
-
-        $.ajax({
-          url: "{% url 'filter_by_location' %}",
-          type: "GET",
-          data: { 'location': selectedLocation },
-          success: function (response) {
-            $("#service-providers").html(response);
-            reinitializeBootstrap();
-            attachLocationFilter();  
-          }
-        });
-      });
-    }
-
-    function attachSearchHandler() {
-      $("#searchBar").off("keyup").on("keyup", function () {
+  <script>
+    $(document).ready(function () {
+      $("#searchBar").on("keyup", function () {
         let query = $(this).val();
-
+        console.log("Search Query:", query);
+    
         $.ajax({
           url: "{% url 'search_providers' %}",
           type: "GET",
-          data: { 
-            'query': query,
-            'location': selectedLocation 
+          data: { 'query': query },
+          success: function (response) {
+            $("#service-providers").html(response);
           },
-          success: function (response) {
-            $("#service-providers").html(response);
-            reinitializeBootstrap();
-            attachLocationFilter(); 
+          error: function () {
+            console.error("Error fetching search results.");
           }
         });
       });
-    }
-
-    function reinitializeBootstrap() {
-      var dropdownElements = document.querySelectorAll('.dropdown-toggle');
-      dropdownElements.forEach(el => new bootstrap.Dropdown(el));
-    }
-  });
-</script> -->
-
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-  $(document).ready(function () {
-    let selectedLocation = "";  
-
-    // Attach event handlers
-    attachLocationFilter();
-    attachSearchHandler();
-
-    function attachLocationFilter() {
-      $(document).off("click", ".location-filter").on("click", ".location-filter", function (e) {
-        e.preventDefault();
-
-        // Get selected location
-        selectedLocation = $(this).data("location");
-        $("#selectedLocationText").text(selectedLocation);
-
-        // Close dropdown
-        let dropdownInstance = bootstrap.Dropdown.getOrCreateInstance($("#locationDropdown")[0]);
-        dropdownInstance.hide();
-
-        // AJAX request to filter by location
-        $.ajax({
-          url: "{% url 'filter_by_location' %}",
-          type: "GET",
-          data: { 'location': selectedLocation },
-          success: function (response) {
-            $("#service-providers").html(response);
-            updateDropdownLocations(); // Ensure dropdown stays updated
-          }
-        });
-      });
-    }
-
-    function attachSearchHandler() {
-      $("#searchBar").off("keyup").on("keyup", function () {
-        let query = $(this).val().trim();
-
-        $.ajax({
-          url: "{% url 'search_providers' %}",
-          type: "GET",
-          data: { 
-            'query': query,
-            'location': selectedLocation 
-          },
-          success: function (response) {
-            $("#service-providers").html(response);
-          }
-        });
-      });
-    }
-
-    function updateDropdownLocations() {
-      $.ajax({
-        url: "{% url 'user_home' %}",
-        type: "GET",
-        success: function (response) {
-          let locationList = $(response).find("#locationMenu").html();
-          $("#locationMenu").html(locationList);
-          attachLocationFilter();  // Reattach event handlers
-        }
-      });
-    }
-  });
-</script>
-
-
-
+    });
+  </script>
 </body>
-
 </html>

@@ -1,3 +1,86 @@
+.navbar {
+    background-color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 15px 20px;
+    transition: all 0.3s ease;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.301);
+    margin-bottom:20px;
+}
+
+.navbar-brand {
+    font-size: 2rem !important;
+    font-family: "Sigmar", serif;
+    font-weight: 400;
+    font-style: normal;
+    color: #ff8800 !important;
+    transition: all 0.3s ease;
+    margin-left: 0.4vw;
+}
+
+.navbar-nav .nav-item .nav-link {
+    font-size: 1rem;
+    color: #333;
+    margin-right: 15px;
+    transition: all 0.3s ease;
+    font-family: "Dancing Script", serif;
+    font-optical-sizing: auto;
+    font-weight: 700;
+    font-style: normal;
+}
+
+.navbar-nav .nav-item .nav-link:hover {
+    color: #ff8800;
+    transform: scale(1.05);
+}
+
+.navbar-toggler {
+    border: none;
+    outline: none;
+}
+
+.form-control {
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 8px;
+    transition: all 0.3s ease;
+
+}
+
+.form-control:focus {
+    border-color: #ff8800;
+    box-shadow: 0 0 5px rgba(255, 204, 0, 0.5);
+}
+
+.btn-outline-success {
+    border: 2px solid #ff8800 !important;
+    color: #ff8800 !important;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-success:hover {
+    background-color: #ff8800 !important;
+    color: white !important;
+}
+.search-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: fit-content;
+  }
+
+  .search-wrapper input {
+    padding-right: 35px;
+    border:2px solid #ff8800;
+  }
+
+  .search-wrapper svg {
+    position: absolute;
+    right: 10px;
+    pointer-events: none; 
+    color: #1b1a1a;
+  }
+
+
 body {
     background-color: #fff;
     font-family: Arial, sans-serif;

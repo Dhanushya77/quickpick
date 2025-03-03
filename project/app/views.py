@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from.models import *
@@ -8,6 +8,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 import random
 from django.db.models import Q
+from .forms import BookingForm
 
 
 
@@ -44,10 +45,6 @@ def user_logout(req):
         return redirect(user_login)
     else:
         return redirect(user_login)
-    
-def dummy_home(req):
-
-    return render(req,'dummy_home.html')
 
 
 # --------------------admin----------------------------
@@ -55,7 +52,6 @@ def dummy_home(req):
 def admin_home(req):
     providers = ServiceProvider.objects.all()
     return render(req,'admin/home.html',{'providers':providers})
-
 
 
 def category(req):
@@ -83,7 +79,6 @@ def view_service(request, cid):
         'category': category,
         'service_providers': service_providers,
     })
-
 
 
 def delete_category(req,id):
@@ -173,6 +168,54 @@ def delete_pro(req,pid):
 
 
 
+def admin_bookings(req):
+    """ Display pending bookings for the logged-in admin owner """
+    if 'admin' in req.session:  
+        bookings = Booking.objects.all().order_by('-date')
+        return render(req, 'admin/admin_bookings.html', {'bookings': bookings})
+    return redirect(user_login)
+
+
+def confirm_booking(req, booking_id):
+    """ Confirm a booking and send an email notification to the user """
+    if 'admin' in req.session:
+        booking = get_object_or_404(Booking, id=booking_id)
+        booking.status = 'Confirmed'
+        booking.save()
+
+        try:
+            send_mail(
+                'Booking Confirmation',
+                f'Your booking with {booking.provider.name} on {booking.date} at {booking.time} has been confirmed.',
+                'your_email@example.com', 
+                [booking.user.email],
+                fail_silently=False,
+            )
+        except Exception as e:
+            print(f"Email sending failed: {e}") 
+
+        return redirect(admin_bookings)
+
+    return redirect(user_login)
+
+def decline_booking(req, booking_id):
+    """ Decline a booking and notify the user via email """
+    if 'admin' in req.session:
+        booking = get_object_or_404(Booking, id=booking_id)
+        booking.status = 'Declined'
+        booking.save()
+
+        send_mail(
+            'Booking Declined',
+            f'Unfortunately, your booking with {booking.provider.name} on {booking.date} at {booking.time} has been declined.',
+            'your_email@example.com',
+            [booking.user.email],
+            fail_silently=False,
+        )
+
+        return redirect(admin_bookings)
+    return redirect(user_login)
+
 # ---------------------user----------------------------
 def register(req):
     if req.method == 'POST':
@@ -231,7 +274,6 @@ def user_home(request):
 def filter_by_location(request):
     location = request.GET.get('location', None)
 
-
     providers = ServiceProvider.objects.filter(location__iexact=location) if location else ServiceProvider.objects.all()
 
     locations = ServiceProvider.objects.values_list('location', flat=True).distinct()
@@ -260,3 +302,165 @@ def search_providers(request):
         providers = providers.filter(location__icontains=location)
 
     return render(request, 'partials/provider_list.html', {'providers': providers})
+
+def addWishlist(req,pid):
+    if 'user' in req.session:
+        pro=ServiceProvider.objects.get(pk=pid)
+        user=User.objects.get(username=req.session['user'])
+        try:
+            data=Wishlist.objects.get(user=user,pro=pro)
+            if data:
+                return redirect(viewWishlist)
+        except:
+            data=Wishlist.objects.create(user=user,pro=pro)
+            data.save()
+        return redirect(viewWishlist)
+    else:
+        return redirect(user_login)  
+
+def viewWishlist(req):
+    if 'user' in req.session:
+        user=User.objects.get(username=req.session['user'])
+        data=Wishlist.objects.filter(user=user)
+        return render(req,'user/wishlist.html',{'data':data})
+    else:
+        return redirect(user_login) 
+
+def deleteWishlist(req,pid):
+    if 'user' in req.session:
+        data=Wishlist.objects.get(pk=pid)
+        data.delete()
+        return redirect(viewWishlist)
+    else:
+        return redirect(user_login) 
+
+
+def view_details(request, id):
+    provider = get_object_or_404(ServiceProvider, pk=id)
+    reviews = Review.objects.filter(provider=provider)
+
+    if request.method == "POST":
+        
+        # ✅ Handling Booking Submission
+        if 'date' in request.POST:
+            date = request.POST.get("date")
+            time = request.POST.get("time")
+            phone = request.POST.get("phone")
+            address = request.POST.get("address")
+
+            if not phone or not address:
+                messages.error(request, "Please fill all fields.")
+                return redirect(view_details, id=id)
+
+            # Create Booking
+            booking = Booking.objects.create(
+                provider=provider,
+                user=request.user,  
+                date=date,
+                time=time,
+                phone=phone,
+                address=address,
+                status="Pending"  
+            )
+
+            # Send Booking Email
+            send_mail(
+                subject="Booking Request Received",
+                message=f"Dear {request.user.username},\n\n"
+                        f"Your booking request with {provider.name} has been received and is pending confirmation.\n\n"
+                        f"📅 Date: {booking.date}\n"
+                        f"⏰ Time: {booking.time}\n"
+                        f"📞 Phone: {booking.phone}\n"
+                        f"🏠 Address: {booking.address}\n\n"
+                        f"You will be notified once it is confirmed.\n\n"
+                        f"Thank you for using our service!\n\n"
+                        f"Best regards,\nYour Service Team",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[request.user.email],
+                fail_silently=False,
+            )
+
+            messages.success(request, "Booking successful! Waiting for confirmation.")
+            return redirect(user_bookings)
+
+        # ✅ Handling Review Submission
+        elif 'review' in request.POST:
+            rating = request.POST.get("rating")
+            message = request.POST.get("message")
+
+            # Ensure rating is not empty and valid
+            if not rating or int(rating) < 1 or int(rating) > 5:
+                messages.error(request, "Invalid rating. Please select between 1-5 stars.")
+                return redirect(view_details, id=id)
+
+            # Create Review
+            Review.objects.create(
+                provider=provider,
+                user=request.user,  
+                rating=int(rating),
+                message=message
+            )
+
+            
+            send_mail(
+                subject="Thank You for Your Review!",
+                message=f"Dear {request.user.username},\n\n"
+                        f"Thank you for leaving a review for {provider.name}.\n\n"
+                        f"🌟 Your Rating: {rating} / 5\n"
+                        f"💬 Your Review: \"{message}\"\n\n"
+                        f"We appreciate your feedback and hope to serve you again!\n\n"
+                        f"Best regards,\nYour Service Team",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[request.user.email],
+                fail_silently=False,
+            )
+
+            messages.success(request, "Review submitted successfully!")
+            return redirect(view_details, id=id)
+
+    return render(request, 'user/view_details.html', {'provider': provider,'reviews': reviews})
+
+
+
+def book_now(request, provider_id):
+    provider = get_object_or_404(ServiceProvider, id=provider_id)
+
+    if request.method == "POST":
+        form = BookingForm(request.POST)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.provider = provider
+            booking.user = request.user  # Store logged-in user
+            booking.status = "Pending"  # Booking is pending confirmation
+            booking.save()
+
+            # Send confirmation email
+        send_mail(
+                subject="Booking Request Received",
+                message=f"Dear {request.user.username},\n\n"
+                        f"Your booking request with {provider.name} has been received and is pending confirmation.\n\n"
+                        f"📅 Date: {booking.date}\n"
+                        f"⏰ Time: {booking.time}\n"
+                        f"📞 Phone: {booking.phone}\n"
+                        f"🏠 Address: {booking.address}\n\n"
+                        f"You will be notified once it is confirmed.\n\n"
+                        f"Thank you for using our service!\n\n"
+                        f"Best regards,\nYour Service Team",
+                from_email=settings.EMAIL_HOST_USER,
+                recipient_list=[request.user.email],
+                fail_silently=False,
+            )
+
+        return redirect(user_bookings)  
+    else:
+        form = BookingForm()
+
+    return render(request, 'user/book_now.html', {'form': form, 'provider': provider})
+
+
+def user_bookings(req):
+    if 'user' in req.session:
+        bookings = Booking.objects.filter(user=req.user).order_by('-date')
+        return render(req, 'user/user_bookings.html', {'bookings': bookings})
+    else:
+        return redirect(user_login)
