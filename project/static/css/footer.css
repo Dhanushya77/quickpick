@@ -12,7 +12,7 @@
     align-items: flex-start;
 }
 
-/* Footer Sections */
+
 .footer-section {
     margin-left:7vw;
     flex: 1;
@@ -20,7 +20,7 @@
     margin-bottom: 20px;
 }
 
-/* Footer Logo */
+
 .footer-logo {
     font-size: 22px;
     font-weight: bold;
@@ -28,7 +28,7 @@
     text-transform: uppercase;
 }
 
-/* Footer Links */
+
 .footer-section h4 {
     font-size: 16px;
     margin-bottom: 15px;
@@ -47,7 +47,6 @@
     color: #ffa726;
 }
 
-/* Social Icons */
 .footer-social a {
     display: inline-block;
     margin: 5px;

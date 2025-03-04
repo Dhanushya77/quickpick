@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.translation import gettext_lazy as _
+from .constants import PaymentStatus
 
 # Create your models here.
 
@@ -57,8 +59,7 @@ class Review(models.Model):
         self.provider.update_rating()
     
 
-            
-
+        
 
 
 class Booking(models.Model):
@@ -69,6 +70,12 @@ class Booking(models.Model):
     date = models.DateField()
     time = models.CharField(max_length=50)
     status = models.CharField(max_length=20, default="Pending")  # Booking status
+    
+    # New fields for payment processing
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  # Advance payment amount
+    payment_status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Paid', 'Paid')], default='Pending')  # Payment status
+    advance_paid = models.BooleanField(default=False)  # Flag to track if the advance payment has been paid
+    razorpay_payment_id = models.CharField(max_length=255, blank=True, null=True)  # Store Razorpay payment ID
 
     def __str__(self):
         return f"Booking by {self.user.username} for {self.provider.name}"

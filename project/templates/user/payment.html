@@ -1,0 +1,48 @@
+ <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+
+
+<body>
+ <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<form name="razorpay_form" action="/razorpay/callback/" method="POST">
+    <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id">
+    <input type="hidden" name="razorpay_order_id" id="razorpay_order_id" value="{{ order_id }}">
+    <input type="hidden" name="razorpay_signature" id="razorpay_signature">
+    <input type="hidden" name="booking_id" value="{{ booking_id }}">
+</form>
+
+<script type="text/javascript">
+    var options = {
+        "key": "{{ razorpay_key }}", // Your Razorpay Key ID
+        "amount": "{{ booking.payment_amount }}",  // Amount in paisa
+        "currency": "INR",
+        "name": "Your Service Name",
+        "order_id": "{{ order_id }}",
+        "handler": function (response) {
+            document.getElementById('razorpay_payment_id').value = response.razorpay_payment_id;
+            document.getElementById('razorpay_order_id').value = response.razorpay_order_id;
+            document.getElementById('razorpay_signature').value = response.razorpay_signature;
+            document.forms['razorpay_form'].submit();
+        },
+        "prefill": {
+            "name": "{{ user.username }}",
+            "email": "{{ user.email }}"
+        }
+    };
+
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+</script>
+</body>
+
+</html> 
+ 

@@ -122,8 +122,9 @@
 
     @media (max-width: 768px) {
         .container1 {
-            padding: 20px;
-            width: 90%;
+            width: 90% !important;
+            margin:auto;
+            margin-left:20vw;
         }
 
         .main h1 {
@@ -153,7 +154,7 @@
 
     @media (min-width: 1025px) {
         .container1 {
-            width: 50%;
+            width: 80%;
             padding: 40px;
         }
 
@@ -164,8 +165,8 @@
 
     @media (min-width: 1600px) {
         .container1 {
-            width: 40%;
-            padding: 50px;
+            width: 50%;
+            /* padding: 50px; */
         }
 
         .main h1 {

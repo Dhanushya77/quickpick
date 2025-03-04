@@ -9,6 +9,10 @@ from django.conf import settings
 import random
 from django.db.models import Q
 from .forms import BookingForm
+import razorpay 
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
 
 
 
@@ -176,18 +180,44 @@ def admin_bookings(req):
     return redirect(user_login)
 
 
+# def confirm_booking(req, booking_id):
+#     """ Confirm a booking and send an email notification to the user """
+#     if 'admin' in req.session:
+#         booking = get_object_or_404(Booking, id=booking_id)
+#         booking.status = 'Confirmed'
+#         booking.save()
+
+#         try:
+#             send_mail(
+#                 'Booking Confirmation',
+#                 f'Your booking with {booking.provider.name} on {booking.date} at {booking.time} has been confirmed.',
+#                 'your_email@example.com', 
+#                 [booking.user.email],
+#                 fail_silently=False,
+#             )
+#         except Exception as e:
+#             print(f"Email sending failed: {e}") 
+
+#         return redirect(admin_bookings)
+
+#     return redirect(user_login)
+
+
 def confirm_booking(req, booking_id):
     """ Confirm a booking and send an email notification to the user """
     if 'admin' in req.session:
         booking = get_object_or_404(Booking, id=booking_id)
+        
+        # Calculate the advance payment (50% of the total charge for this example)
         booking.status = 'Confirmed'
+        booking.payment_amount = booking.provider.charge * 0.2  
         booking.save()
 
         try:
             send_mail(
                 'Booking Confirmation',
-                f'Your booking with {booking.provider.name} on {booking.date} at {booking.time} has been confirmed.',
-                'your_email@example.com', 
+                f'Your booking with {booking.provider.name} on {booking.date} at {booking.time} has been confirmed. Please make an advance payment of {booking.payment_amount}.',
+                'your_email@example.com',  # Replace with your email address
                 [booking.user.email],
                 fail_silently=False,
             )
@@ -197,6 +227,7 @@ def confirm_booking(req, booking_id):
         return redirect(admin_bookings)
 
     return redirect(user_login)
+
 
 def decline_booking(req, booking_id):
     """ Decline a booking and notify the user via email """
@@ -265,11 +296,14 @@ def otp_confirmation(req):
 
 
 def user_home(request):
-    providers = ServiceProvider.objects.all()
-    locations = ServiceProvider.objects.values_list('location', flat=True).distinct()
-    print(locations)
-    locations = sorted(set(loc.capitalize() for loc in locations if loc))
-    return render(request, 'user/home.html', {'providers': providers, 'locations': locations})
+    if 'admin' not in request.session:
+        providers = ServiceProvider.objects.all()
+        locations = ServiceProvider.objects.values_list('location', flat=True).distinct()
+        print(locations)
+        locations = sorted(set(loc.capitalize() for loc in locations if loc))
+        return render(request, 'user/home.html', {'providers': providers, 'locations': locations})
+    else: 
+        return redirect(admin_home)
 
 def filter_by_location(request):
     location = request.GET.get('location', None)
@@ -336,126 +370,128 @@ def deleteWishlist(req,pid):
 
 
 def view_details(request, id):
-    provider = get_object_or_404(ServiceProvider, pk=id)
-    reviews = Review.objects.filter(provider=provider)
+    if 'user' in request.session:
 
-    if request.method == "POST":
-        
-        # ✅ Handling Booking Submission
-        if 'date' in request.POST:
-            date = request.POST.get("date")
-            time = request.POST.get("time")
-            phone = request.POST.get("phone")
-            address = request.POST.get("address")
+        provider = get_object_or_404(ServiceProvider, pk=id)
+        reviews = Review.objects.filter(provider=provider)
 
-            if not phone or not address:
-                messages.error(request, "Please fill all fields.")
-                return redirect(view_details, id=id)
+        if request.method == "POST":
+            
+            if 'date' in request.POST:
+                date = request.POST.get("date")
+                time = request.POST.get("time")
+                phone = request.POST.get("phone")
+                address = request.POST.get("address")
 
-            # Create Booking
-            booking = Booking.objects.create(
-                provider=provider,
-                user=request.user,  
-                date=date,
-                time=time,
-                phone=phone,
-                address=address,
-                status="Pending"  
-            )
+                if not phone or not address:
+                    messages.error(request, "Please fill all fields.")
+                    return redirect(view_details, id=id)
+                booking = Booking.objects.create(
+                    provider=provider,
+                    user=request.user,  
+                    date=date,
+                    time=time,
+                    phone=phone,
+                    address=address,
+                    status="Pending"  
+                )
 
-            # Send Booking Email
-            send_mail(
-                subject="Booking Request Received",
-                message=f"Dear {request.user.username},\n\n"
-                        f"Your booking request with {provider.name} has been received and is pending confirmation.\n\n"
-                        f"📅 Date: {booking.date}\n"
-                        f"⏰ Time: {booking.time}\n"
-                        f"📞 Phone: {booking.phone}\n"
-                        f"🏠 Address: {booking.address}\n\n"
-                        f"You will be notified once it is confirmed.\n\n"
-                        f"Thank you for using our service!\n\n"
-                        f"Best regards,\nYour Service Team",
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[request.user.email],
-                fail_silently=False,
-            )
+                send_mail(
+                    subject="Booking Request Received",
+                    message=f"Dear {request.user.username},\n\n"
+                            f"Your booking request with {provider.name} has been received and is pending confirmation.\n\n"
+                            f"📅 Date: {booking.date}\n"
+                            f"⏰ Time: {booking.time}\n"
+                            f"📞 Phone: {booking.phone}\n"
+                            f"🏠 Address: {booking.address}\n\n"
+                            f"You will be notified once it is confirmed.\n\n"
+                            f"Thank you for using our service!\n\n"
+                            f"Best regards,\nYour Service Team",
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[request.user.email],
+                    fail_silently=False,
+                )
 
-            messages.success(request, "Booking successful! Waiting for confirmation.")
-            return redirect(user_bookings)
-
-        # ✅ Handling Review Submission
-        elif 'review' in request.POST:
-            rating = request.POST.get("rating")
-            message = request.POST.get("message")
-
-            # Ensure rating is not empty and valid
-            if not rating or int(rating) < 1 or int(rating) > 5:
-                messages.error(request, "Invalid rating. Please select between 1-5 stars.")
-                return redirect(view_details, id=id)
-
-            # Create Review
-            Review.objects.create(
-                provider=provider,
-                user=request.user,  
-                rating=int(rating),
-                message=message
-            )
+                messages.success(request, "Booking successful! Waiting for confirmation.")
+                return redirect(user_bookings)
+            
+            elif 'review' in request.POST:
+                rating = request.POST.get("rating")
+                message = request.POST.get("message")
 
             
-            send_mail(
-                subject="Thank You for Your Review!",
-                message=f"Dear {request.user.username},\n\n"
-                        f"Thank you for leaving a review for {provider.name}.\n\n"
-                        f"🌟 Your Rating: {rating} / 5\n"
-                        f"💬 Your Review: \"{message}\"\n\n"
-                        f"We appreciate your feedback and hope to serve you again!\n\n"
-                        f"Best regards,\nYour Service Team",
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[request.user.email],
-                fail_silently=False,
-            )
+                if not rating or int(rating) < 1 or int(rating) > 5:
+                    messages.error(request, "Invalid rating. Please select between 1-5 stars.")
+                    return redirect(view_details, id=id)
 
-            messages.success(request, "Review submitted successfully!")
-            return redirect(view_details, id=id)
+            
+                Review.objects.create(
+                    provider=provider,
+                    user=request.user,  
+                    rating=int(rating),
+                    message=message
+                )
 
-    return render(request, 'user/view_details.html', {'provider': provider,'reviews': reviews})
+                
+                send_mail(
+                    subject="Thank You for Your Review!",
+                    message=f"Dear {request.user.username},\n\n"
+                            f"Thank you for leaving a review for {provider.name}.\n\n"
+                            f"🌟 Your Rating: {rating} / 5\n"
+                            f"💬 Your Review: \"{message}\"\n\n"
+                            f"We appreciate your feedback and hope to serve you again!\n\n"
+                            f"Best regards,\nYour Service Team",
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[request.user.email],
+                    fail_silently=False,
+                )
 
+                messages.success(request, "Review submitted successfully!")
+                return redirect(view_details, id=id)
+
+        return render(request, 'user/view_details.html', {'provider': provider,'reviews': reviews})
+    
+    else:
+        return redirect(user_login)
 
 
 def book_now(request, provider_id):
-    provider = get_object_or_404(ServiceProvider, id=provider_id)
+    if 'user' in request.session:
+        provider = get_object_or_404(ServiceProvider, id=provider_id)
 
-    if request.method == "POST":
-        form = BookingForm(request.POST)
-        if form.is_valid():
-            booking = form.save(commit=False)
-            booking.provider = provider
-            booking.user = request.user  # Store logged-in user
-            booking.status = "Pending"  # Booking is pending confirmation
-            booking.save()
+        if request.method == "POST":
+            form = BookingForm(request.POST)
+            if form.is_valid():
+                booking = form.save(commit=False)
+                booking.provider = provider
+                booking.user = request.user  
+                booking.status = "Pending"  
+                booking.save()
 
-            # Send confirmation email
-        send_mail(
-                subject="Booking Request Received",
-                message=f"Dear {request.user.username},\n\n"
-                        f"Your booking request with {provider.name} has been received and is pending confirmation.\n\n"
-                        f"📅 Date: {booking.date}\n"
-                        f"⏰ Time: {booking.time}\n"
-                        f"📞 Phone: {booking.phone}\n"
-                        f"🏠 Address: {booking.address}\n\n"
-                        f"You will be notified once it is confirmed.\n\n"
-                        f"Thank you for using our service!\n\n"
-                        f"Best regards,\nYour Service Team",
-                from_email=settings.EMAIL_HOST_USER,
-                recipient_list=[request.user.email],
-                fail_silently=False,
-            )
+            
+            send_mail(
+                    subject="Booking Request Received",
+                    message=f"Dear {request.user.username},\n\n"
+                            f"Your booking request with {provider.name} has been received and is pending confirmation.\n\n"
+                            f"📅 Date: {booking.date}\n"
+                            f"⏰ Time: {booking.time}\n"
+                            f"📞 Phone: {booking.phone}\n"
+                            f"🏠 Address: {booking.address}\n\n"
+                            f"You will be notified once it is confirmed.\n\n"
+                            f"Thank you for using our service!\n\n"
+                            f"Best regards,\nYour Service Team",
+                    from_email=settings.EMAIL_HOST_USER,
+                    recipient_list=[request.user.email],
+                    fail_silently=False,
+                )
 
-        return redirect(user_bookings)  
+            return redirect(user_bookings)  
+        else:
+            form = BookingForm()
+
+        return render(request, 'user/book_now.html', {'form': form, 'provider': provider})
     else:
-        form = BookingForm()
-
-    return render(request, 'user/book_now.html', {'form': form, 'provider': provider})
+        return redirect(user_login)
 
 
 def user_bookings(req):
@@ -464,3 +500,78 @@ def user_bookings(req):
         return render(req, 'user/user_bookings.html', {'bookings': bookings})
     else:
         return redirect(user_login)
+    
+
+
+
+
+def order_payment(request, booking_id):
+    try:
+        booking = Booking.objects.get(id=booking_id)
+
+        if booking.payment_status == 'Paid':
+            return render(request, 'error.html', {'message': 'Payment already completed.'})
+
+        # Initialize Razorpay client
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+        # Create Razorpay order for the advance payment
+        razorpay_order = client.order.create({
+            "amount": int(booking.payment_amount * 100),  # Convert amount to paise
+            "currency": "INR",
+            "payment_capture": "1",  # Automatically capture payment
+        })
+
+        order_id = razorpay_order['id']
+
+        # Pass the necessary details to the template
+        return render(
+            request,
+            "user/payment.html",  
+            {
+                "razorpay_key": settings.RAZORPAY_KEY_ID,
+                "order_id": order_id,
+                "booking_id": booking_id,
+                "callback_url":"http://127.0.0.1:8000/razorpay/callback",  # Replace with actual callback URL
+            },
+        )
+
+    except Booking.DoesNotExist:
+        return render(request, {'message': 'Booking not found'})
+
+
+@csrf_exempt
+def callback(request):
+    # Get Razorpay payment and order details from request
+    payment_id = request.POST.get("razorpay_payment_id")
+    order_id = request.POST.get("razorpay_order_id")
+    signature = request.POST.get("razorpay_signature")
+
+    # Initialize Razorpay client
+    client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+    # Verify payment signature
+    params = {
+        'razorpay_order_id': order_id,
+        'razorpay_payment_id': payment_id,
+        'razorpay_signature': signature,
+    }
+
+    try:
+        # Verify the payment signature
+        client.utility.verify_payment_signature(params)
+
+        # Fetch the booking related to this order
+        booking = Booking.objects.get(id=request.POST['booking_id'])
+
+        # Update the booking payment status
+        booking.payment_status = 'Paid'
+        booking.advance_paid = True  # Flag indicating the advance has been paid
+        booking.save()
+
+        # Send a success response or redirect to success page
+        return JsonResponse({"status": "success"}, status=200)
+
+    except Exception as e:
+        # Handle failure or invalid payment
+        return JsonResponse({"status": "failure", "message": str(e)}, status=400)

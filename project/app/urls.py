@@ -7,6 +7,8 @@ urlpatterns = [
     path('logout',views.user_logout),
     path('register',views.register),
     path('otp',views.otp_confirmation),
+
+
     # ---------------admin----------------
     path('admin_home',views.admin_home),
     path('category',views.category),
@@ -31,4 +33,6 @@ urlpatterns = [
     path('deleteWishlist/<pid>',views.deleteWishlist),
     path('book-now/<int:provider_id>/', views.book_now, name='book_now'),
     path('user_bookings',views.user_bookings),
+    path('order_payment', views.order_payment, name='order_payment'),
+    path('callback',views.callback,name="callback"),
 ]
