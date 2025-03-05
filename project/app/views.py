@@ -180,35 +180,13 @@ def admin_bookings(req):
     return redirect(user_login)
 
 
-# def confirm_booking(req, booking_id):
-#     """ Confirm a booking and send an email notification to the user """
-#     if 'admin' in req.session:
-#         booking = get_object_or_404(Booking, id=booking_id)
-#         booking.status = 'Confirmed'
-#         booking.save()
-
-#         try:
-#             send_mail(
-#                 'Booking Confirmation',
-#                 f'Your booking with {booking.provider.name} on {booking.date} at {booking.time} has been confirmed.',
-#                 'your_email@example.com', 
-#                 [booking.user.email],
-#                 fail_silently=False,
-#             )
-#         except Exception as e:
-#             print(f"Email sending failed: {e}") 
-
-#         return redirect(admin_bookings)
-
-#     return redirect(user_login)
-
 
 def confirm_booking(req, booking_id):
     """ Confirm a booking and send an email notification to the user """
     if 'admin' in req.session:
         booking = get_object_or_404(Booking, id=booking_id)
         
-        # Calculate the advance payment (50% of the total charge for this example)
+       
         booking.status = 'Confirmed'
         booking.payment_amount = booking.provider.charge * 0.2  
         booking.save()
@@ -217,7 +195,7 @@ def confirm_booking(req, booking_id):
             send_mail(
                 'Booking Confirmation',
                 f'Your booking with {booking.provider.name} on {booking.date} at {booking.time} has been confirmed. Please make an advance payment of {booking.payment_amount}.',
-                'your_email@example.com',  # Replace with your email address
+                'your_email@example.com',
                 [booking.user.email],
                 fail_silently=False,
             )
@@ -504,7 +482,6 @@ def user_bookings(req):
 
 
 
-
 def order_payment(request, booking_id):
     try:
         booking = Booking.objects.get(id=booking_id)
@@ -512,19 +489,19 @@ def order_payment(request, booking_id):
         if booking.payment_status == 'Paid':
             return render(request, 'error.html', {'message': 'Payment already completed.'})
 
-        # Initialize Razorpay client
+       
         client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
-        # Create Razorpay order for the advance payment
+       
         razorpay_order = client.order.create({
-            "amount": int(booking.payment_amount * 100),  # Convert amount to paise
+            "amount": int(booking.payment_amount * 100), 
             "currency": "INR",
-            "payment_capture": "1",  # Automatically capture payment
+            "payment_capture": "1", 
         })
 
         order_id = razorpay_order['id']
 
-        # Pass the necessary details to the template
+    
         return render(
             request,
             "user/payment.html",  
@@ -532,7 +509,7 @@ def order_payment(request, booking_id):
                 "razorpay_key": settings.RAZORPAY_KEY_ID,
                 "order_id": order_id,
                 "booking_id": booking_id,
-                "callback_url":"http://127.0.0.1:8000/razorpay/callback",  # Replace with actual callback URL
+                "callback_url":"http://127.0.0.1:8000/razorpay/callback",  
             },
         )
 
@@ -542,15 +519,15 @@ def order_payment(request, booking_id):
 
 @csrf_exempt
 def callback(request):
-    # Get Razorpay payment and order details from request
+    
     payment_id = request.POST.get("razorpay_payment_id")
     order_id = request.POST.get("razorpay_order_id")
     signature = request.POST.get("razorpay_signature")
 
-    # Initialize Razorpay client
+    
     client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
-    # Verify payment signature
+
     params = {
         'razorpay_order_id': order_id,
         'razorpay_payment_id': payment_id,
@@ -558,20 +535,14 @@ def callback(request):
     }
 
     try:
-        # Verify the payment signature
+    
         client.utility.verify_payment_signature(params)
-
-        # Fetch the booking related to this order
         booking = Booking.objects.get(id=request.POST['booking_id'])
-
-        # Update the booking payment status
         booking.payment_status = 'Paid'
-        booking.advance_paid = True  # Flag indicating the advance has been paid
+        booking.advance_paid = True  
         booking.save()
 
-        # Send a success response or redirect to success page
-        return JsonResponse({"status": "success"}, status=200)
+        return redirect(user_bookings)
 
     except Exception as e:
-        # Handle failure or invalid payment
         return JsonResponse({"status": "failure", "message": str(e)}, status=400)

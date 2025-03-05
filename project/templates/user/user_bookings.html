@@ -30,16 +30,16 @@
           
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <a class="nav-link active" href="../../">Home</a>
+              <a class="nav-link active" href="../../"><i class="fas fa-home"></i> Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="../viewWishlist">Wishlist</a>
+              <a class="nav-link active" href="../viewWishlist"><i class="fas fa-heart"></i> Wishlist</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link active" href="user_bookings">Bookings</a>
+              <a class="nav-link active" href="user_bookings"><i class="fas fa-list"></i> Bookings</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="../logout">Logout</a>
+              <a class="nav-link" href="../logout"><i class="fas fa-sign-out"></i> Logout</a>
             </li>
           </ul>
         </div>
@@ -63,9 +63,15 @@
                                     <i class="fas fa-info-circle"></i> Status: 
                                     {% if booking.status == "Confirmed" %}
                                         <span class="badge bg-success">Confirmed</span>
-                                        <div class="btn btn-primary mt-1">
+                                        {% if booking.payment_status == "Paid" %}
+                                        <div class="mt-3">
+                                            <p style="color: green; border:1px solid green; border-radius:8px; "><i class="fas fa-check"></i> Payment done</p>
+                                        </div>
+                                        {% else %}
+                                        <div class="btn btn-primary mt-3">
                                             <a style="text-decoration: none; color:white" href="order_payment/{{booking.id}}">Make advance payment</a>
                                         </div>
+                                        {% endif %}
                                         
                                     {% else %}
                                         <span class="badge bg-warning">Pending</span>
@@ -86,7 +92,7 @@
             </a>
         </div>
     </div>
-    <footer class="footer">
+    <footer class="footer mt-5">
         <div class="footer-section">
             <div class="footer-logo">QuickPick</div>
             <p>Providing the best services near you.</p>

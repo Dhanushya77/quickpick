@@ -34,5 +34,5 @@ urlpatterns = [
     path('book-now/<int:provider_id>/', views.book_now, name='book_now'),
     path('user_bookings',views.user_bookings),
     path('order_payment/<booking_id>', views.order_payment, name='order_payment'),
-    path('callback',views.callback,name="callback"),
+    path('razorpay/callback/',views.callback),
 ]
