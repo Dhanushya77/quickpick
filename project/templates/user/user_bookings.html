@@ -64,7 +64,7 @@
                                     {% if booking.status == "Confirmed" %}
                                         <span class="badge bg-success">Confirmed</span>
                                         <div class="btn btn-primary mt-1">
-                                            <a style="text-decoration: none; color:white" href="payment">Make advance payment</a>
+                                            <a style="text-decoration: none; color:white" href="order_payment/{{booking.id}}">Make advance payment</a>
                                         </div>
                                         
                                     {% else %}
@@ -77,7 +77,7 @@
                 {% endfor %}
             </div>
         {% else %}
-            <p class="text-center mt-4">You have no bookings yet.</p>
+            <p class="text-center mt-4 mb-4">You have no bookings yet.</p>
         {% endif %}
 
         <div class="text-center mt-4">
