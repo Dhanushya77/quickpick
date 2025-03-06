@@ -87,20 +87,16 @@ body {
     color: #333;
     margin: 0;
     padding: 0;
-    height:100%;
-    display: flex;
-    flex-direction: column;
 }
 
+
 .container {
-flex-grow: 1;
     max-width: 1200px;
     margin: 30px auto;
     padding: 20px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 200px;
 }
 
 
