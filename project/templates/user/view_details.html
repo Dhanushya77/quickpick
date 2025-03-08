@@ -28,7 +28,7 @@
           aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-    
+        
         <div class="collapse navbar-collapse" id="navbarNav">
           
           
@@ -43,12 +43,21 @@
               <a class="nav-link active" href="../../user_bookings">Bookings</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="logout">Logout</a>
+              <a class="nav-link" href="../../logout">Logout</a>
             </li>
           </ul>
         </div>
       </nav>
-
+      {% if messages %}
+      <div class="container mt-3">
+          {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+          {% endfor %}
+      </div>
+  {% endif %}
     <div class="container">
         <div class="left-panel">
             <img src="{{ provider.profile.url }}" alt="Profile Image" class="profile-img">
@@ -82,7 +91,9 @@
                     </div>
                     <div class="mb-3">
                         <label for="phone" class="form-label">Phone Number</label>
-                        <input type="text" name="phone" class="form-control" required>
+                        <input type="text" name="phone" class="form-control" required pattern="[6-9]{1}[0-9]{9}">
+                        {{ form.phone.errors }}
+
                     </div>
                     <div class="mb-3">
                         <label for="address" class="form-label">Address</label>

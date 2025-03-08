@@ -89,6 +89,7 @@
         </style>
 </head>
 <body>
+
     <nav class="navbar navbar-expand-lg">
         <img src="../../static/logo.png" alt="logo" width="80" height="80">
         <a class="navbar-brand" href="#">QuickPick</a>
@@ -116,10 +117,15 @@
           </ul>
         </div>
       </nav>
+
     <div class="container">
         <h2 class="text-center">Book {{ provider.name }}</h2>
         <img style="border-radius:20%; height:200px;width:240px;" src="{{provider.profile.url}}" alt="" >
-
+ {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-warning">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
         <form method="POST" class="booking-form">
             {% csrf_token %}
             
@@ -181,5 +187,7 @@
     <div class="footer-bottom">
         &copy; 2025 QuickPick. All rights reserved.
     </div>
+   
+
 </body>
 </html>

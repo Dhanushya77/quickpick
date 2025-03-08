@@ -23,6 +23,14 @@
         <div class="main">
             <img src="../static/logo.png" alt="Logo" class="img-fluid mb-4" style="max-width: 100px;"> 
             <h1>Login to Find Services</h1>
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-warning alert-dismissible">
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <strong>Warning!</strong>{{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
             <form action="" method="post">
                 {% csrf_token %}
                 <input type="text" name="uname" class="input" placeholder="Username/Email ID" required><br><br>
@@ -33,16 +41,7 @@
         </div>
     </div>
 
-    <div class="sub">
-        {% if messages %}
-        {% for message in messages %}
-        <div class="alert alert-warning alert-dismissible">
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            <strong>Warning!</strong>{{ message }}
-        </div>
-        {% endfor %}
-        {% endif %}
-    </div>
+    
 
 </body>
 

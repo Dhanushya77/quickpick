@@ -76,6 +76,9 @@ class Booking(models.Model):
     payment_status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Paid', 'Paid')], default='Pending')  # Payment status
     advance_paid = models.BooleanField(default=False)  # Flag to track if the advance payment has been paid
     razorpay_payment_id = models.CharField(max_length=255, blank=True, null=True)  # Store Razorpay payment ID
+    
+    class Meta:
+        unique_together = ('provider', 'date', 'time')
 
     def __str__(self):
         return f"Booking by {self.user.username} for {self.provider.name}"
