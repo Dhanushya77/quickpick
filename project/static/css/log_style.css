@@ -124,7 +124,8 @@
         .container1 {
             width: 90% !important;
             margin:auto;
-            margin-left:20vw;
+            margin-left: 10vw;
+            margin-right:10vw;
         }
 
         .main h1 {
