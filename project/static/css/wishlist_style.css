@@ -237,6 +237,9 @@ footer {
         font-size: 13px;
         padding: 5px 8px;
     }
+    .navbar-nav .nav-item .nav-link {
+        padding: 10px 20px;
+    }
 }
 
 

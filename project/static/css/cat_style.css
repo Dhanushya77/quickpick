@@ -147,4 +147,7 @@ input[type="file"] {
     .main {
         width: 80%; 
     }
+    .navbar-nav .nav-item .nav-link {
+        padding: 10px 20px;
+    }
 }

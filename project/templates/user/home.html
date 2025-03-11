@@ -18,22 +18,46 @@
 </head>
 
 <body>
+
+
+  <div id="intro" class="carousel slide aa " data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active" style="margin-top: 1vh;">
+        <p>Find Local Services Fast – Your QuickPick to Convenience!</p>
+      </div>
+      <div class="carousel-item">
+        <p>Discover, Choose, and Book Local Services in a Snap !</p>
+      </div>
+      <div class="carousel-item">
+        <p>Fast, Reliable, Local – QuickPick Finds It All!</p>
+      </div>
+      <div class="carousel-item">
+        <p>Start Booking Now and Discover Services without Limits!</p>
+      </div>
+    </div>
+  </div>
+
+
   <nav class="navbar navbar-expand-lg">
     <img src="static/logo.png" alt="logo" width="80" height="80">
     <a class="navbar-brand" href="#">QuickPick</a>
-    <button style="margin-right: 2vw;"  class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button style="margin-right: 2vw;" class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
       <form class="d-flex">
         <div class="search-wrapper">
-          <input class="form-control" type="search" id="searchBar" placeholder="Search..." aria-label="Search"/>
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg>
+          <input class="form-control" type="search" id="searchBar" placeholder="Search..." aria-label="Search" />
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
+            viewBox="0 0 16 16">
+            <path
+              d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+          </svg>
         </div>
       </form>
-      
+
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
           <a class="nav-link active" href="#">Home</a>
@@ -50,56 +74,69 @@
       </ul>
     </div>
   </nav>
+  <div class="container">
+    <div class="categories">
+      {% for category in categories %}
+      <div class="category-item">
+        <a href="category/{{category.id}}">
+          <img src="{{ category.img.url }}" alt="{{ category.category }}" style="width:200px;">
+          <p><b>{{ category.category }}</b></p>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 
   <div class="container" id="service-providers">
     {% include 'partials/provider_list.html' %}
   </div>
+
   <footer class="footer">
     <div class="footer-section">
-        <div class="footer-logo">QuickPick</div>
-        <p>Providing the best services near you.</p>
+      <div class="footer-logo">QuickPick</div>
+      <p>Providing the best services near you.</p>
     </div>
 
     <div class="footer-section footer-links">
-        <h4>Quick Links</h4>
-        <a href="#">Home</a>
-        <a href="#">Services</a>
-        <a href="#">About Us</a>
-        <a href="#">Contact</a>
+      <h4>Quick Links</h4>
+      <a href="#">Home</a>
+      <a href="#">Services</a>
+      <a href="#">About Us</a>
+      <a href="#">Contact</a>
     </div>
 
     <div class="footer-section footer-links">
-        <h4>Support</h4>
-        <a href="#">FAQs</a>
-        <a href="#">Terms of Service</a>
-        <a href="#">Privacy Policy</a>
+      <h4>Support</h4>
+      <a href="#">FAQs</a>
+      <a href="#">Terms of Service</a>
+      <a href="#">Privacy Policy</a>
     </div>
 
     <div class="footer-section">
-        <h4>Follow Us</h4>
-        <div class="footer-social">
-            <a href="#"><i class="fab fa-facebook"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-linkedin"></i></a>
-        </div>
+      <h4>Follow Us</h4>
+      <div class="footer-social">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-instagram"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+      </div>
     </div>
-</footer>
+  </footer>
 
-<div class="footer-bottom">
+  <div class="footer-bottom">
     &copy; 2025 QuickPick. All rights reserved.
-</div>
+  </div>
 
   <!-- ------------- js ---------------- -->
   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  
+
   <script>
     $(document).ready(function () {
       $("#searchBar").on("keyup", function () {
         let query = $(this).val();
         console.log("Search Query:", query);
-    
+
         $.ajax({
           url: "{% url 'search_providers' %}",
           type: "GET",
@@ -115,4 +152,5 @@
     });
   </script>
 </body>
+
 </html>

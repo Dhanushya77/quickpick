@@ -208,4 +208,7 @@ h2 {
     .button-group {
         flex-direction: column;
     }
+    .navbar-nav .nav-item .nav-link {
+        padding: 10px 20px;
+    }
 }

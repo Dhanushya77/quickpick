@@ -197,4 +197,7 @@ body {
     .category-text {
         font-size: 14px;
     }
+    .navbar-nav .nav-item .nav-link {
+        padding: 10px 20px;
+    }
 }

@@ -287,6 +287,9 @@ body {
     .review-list {
         padding: 15px;
     }
+    .navbar-nav .nav-item .nav-link {
+        padding: 10px 20px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -306,5 +309,8 @@ body {
 
     .review-list {
         padding: 10px;
+    }
+    .navbar-nav .nav-item .nav-link {
+        padding: 10px 20px;
     }
 }

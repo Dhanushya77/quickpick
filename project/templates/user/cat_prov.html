@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ category.category }} Providers</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/home_style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/footer.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- --------------font------------------- -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Sigmar&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg">
+        <img src="../../static/logo.png" alt="logo" width="80" height="80">
+        <a class="navbar-brand" href="#">QuickPick</a>
+        <button style="margin-right: 2vw;"  class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+          aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+    
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <form class="d-flex">
+            <div class="search-wrapper">
+              <input class="form-control" type="search" id="searchBar" placeholder="Search..." aria-label="Search"/>
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/></svg>
+            </div>
+          </form>
+          
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="../../">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="../../viewWishlist">Wishlist</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="../../user_bookings">Bookings</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="../../logout">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+    <h3 class="text-center mb-4" style="color: #ff8800;">{{ category.category }}</h3>
+
+    <div class="container">
+     
+        {% if service_providers %}
+        {% for provider in service_providers %}
+        <div class="provider-card">
+            <img src="{{ provider.profile.url }}" alt="{{ provider.name }}">
+            <div class="provider-card-content">
+                <h3>{{ provider.name }}</h3>
+                <p class="category">{{ provider.category.category }}</p>
+                <p>Phone: {{ provider.phone }}</p>
+                <p>Experience: {{ provider.experience }} years</p>
+                <p>Location: {{ provider.location }}</p>
+                <p><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="orange" class="bi bi-star-fill"
+                        viewBox="0 0 16 16">
+                        <path
+                            d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
+                    </svg> {{ provider.rating }} / 5</p>
+                <p class="charge">Charge: ${{ provider.charge }}</p>
+
+                <div class="btn-container">
+                    <a href="../../edit_pro/{{provider.id}}" class="btn">Edit</a>
+                    <a href="../../delete_pro/{{provider.id}}" class="btn">Delete</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% else %}
+        <p style="text-align: center; width: 100%; font-size: 18px;">No providers available at the moment.</p>
+        {% endif %}
+    </div>
+
+    <footer class="footer">
+        <div class="footer-section">
+            <div class="footer-logo">QuickPick</div>
+            <p>Providing the best services near you.</p>
+        </div>
+    
+        <div class="footer-section footer-links">
+            <h4>Quick Links</h4>
+            <a href="#">Home</a>
+            <a href="#">Services</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+        </div>
+    
+        <div class="footer-section footer-links">
+            <h4>Support</h4>
+            <a href="#">FAQs</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Policy</a>
+        </div>
+    
+        <div class="footer-section">
+            <h4>Follow Us</h4>
+            <div class="footer-social">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin"></i></a>
+            </div>
+        </div>
+    </footer>
+    
+    <div class="footer-bottom">
+        &copy; 2025 QuickPick. All rights reserved.
+    </div>
+</body>
+</html>

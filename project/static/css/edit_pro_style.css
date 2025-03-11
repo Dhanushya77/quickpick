@@ -180,4 +180,7 @@ h1 {
     .image-upload-container img {
         height: 200px;
     }
+    .navbar-nav .nav-item .nav-link {
+        padding: 10px 20px !important;
+    }
 }
