@@ -25,13 +25,13 @@ class ServiceProvider(models.Model):
     
     def update_rating(self):
         """Update provider rating based on all reviews."""
-        reviews = self.reviews.all()  # Get all reviews for this provider
+        reviews = self.reviews.all() 
         total_reviews = reviews.count()
         if total_reviews > 0:
             avg_rating = sum(review.rating for review in reviews) / total_reviews
-            self.rating = round(avg_rating, 1)  # Round to 1 decimal place
+            self.rating = round(avg_rating, 1) 
         else:
-            self.rating = 0  # Reset to 0 if no reviews exist
+            self.rating = 0  
         
         self.save()
     
@@ -45,11 +45,9 @@ class Wishlist(models.Model):
     pro=models.ForeignKey(ServiceProvider,on_delete=models.CASCADE)
 
 
-
-
 class Review(models.Model):
     provider = models.ForeignKey(ServiceProvider, on_delete=models.CASCADE, related_name="reviews")
-    user = models.ForeignKey(User, on_delete=models.CASCADE)  # To track which user submitted the review
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  
     rating = models.IntegerField()
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
@@ -65,20 +63,28 @@ class Review(models.Model):
 class Booking(models.Model):
     provider = models.ForeignKey('ServiceProvider', on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    phone = models.CharField(max_length=15)  # Store user phone number
-    address = models.TextField()  # Store user address
+    phone = models.CharField(max_length=15)  
+    address = models.TextField()  
     date = models.DateField()
     time = models.CharField(max_length=50)
-    status = models.CharField(max_length=20, default="Pending")  # Booking status
+    status = models.CharField(max_length=20, default="Pending") 
     
-    # New fields for payment processing
-    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  # Advance payment amount
-    payment_status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Paid', 'Paid')], default='Pending')  # Payment status
-    advance_paid = models.BooleanField(default=False)  # Flag to track if the advance payment has been paid
-    razorpay_payment_id = models.CharField(max_length=255, blank=True, null=True)  # Store Razorpay payment ID
+
+    payment_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.0)  
+    payment_status = models.CharField(max_length=20, choices=[('Pending', 'Pending'), ('Paid', 'Paid')], default='Pending')  
+    advance_paid = models.BooleanField(default=False)  
+    razorpay_payment_id = models.CharField(max_length=255, blank=True, null=True)  
     
     class Meta:
         unique_together = ('provider', 'date', 'time')
 
     def __str__(self):
         return f"Booking by {self.user.username} for {self.provider.name}"
+
+class Address(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    address_line = models.TextField()
+    phone_number = models.CharField(max_length=15)
+
+    def __str__(self):
+        return f"{self.address_line} ({self.phone_number})"

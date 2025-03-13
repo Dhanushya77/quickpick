@@ -19,7 +19,7 @@
 
 <body>
     <nav class="navbar navbar-expand-lg">
-        <img src="static/logo.png" alt="logo" width="80" height="80">
+        <img src="../../static/logo.png" alt="logo" width="80" height="80">
         <a class="navbar-brand" href="#">QuickPick</a>
         <button style="margin-right: 2vw;"  class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
           aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -47,13 +47,24 @@
           </ul>
         </div>
       </nav>
+
+      {% if messages %}
+    <div class="container mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
     <div class="container">
         <h1>Edit Service Provider</h1>
         <div class="form-container">
             <form action="" method="post" enctype="multipart/form-data">
                 {% csrf_token %}
 
-                
                 <div class="product-form-wrapper">
                     <div class="col-md-6">
                         <label for="category">Category:</label>
@@ -64,7 +75,6 @@
                         </select>
                     </div>
 
-                    
                     <div class="col-md-6">
                         <label for="name">Full Name:</label>
                         <input type="text" name="name" class="input3" value="{{ provider.name }}" required>
@@ -73,7 +83,7 @@
                     
                     <div class="col-md-6">
                         <label for="phone">Phone Number:</label>
-                        <input type="number" name="phone" class="input3" value="{{ provider.phone }}" required>
+                        <input type="number" name="phone" class="input3" value="{{ provider.phone }}" min="1" required>
                     </div>
 
                     
@@ -81,7 +91,6 @@
                         <label for="experience">Experience (years):</label>
                         <input type="number" name="experience" class="input3" value="{{ provider.experience }}" required>
                     </div>
-
                     
                     <div class="col-md-6">
                         <label for="profile">Profile Picture:</label><br><br>
@@ -93,7 +102,6 @@
                         </div>
                     </div>
 
-                
                     <div class="col-md-6">
                         <label for="location">Location:</label>
                         <input type="text" name="location" class="input3" value="{{ provider.location }}" required>
@@ -103,13 +111,11 @@
                         <label for="des">Description:</label>
                         <textarea name="des" class="input3" rows="3" required>{{ provider.des }}</textarea required>
                     </div>
-
                    
                     <div class="col-md-6">
                         <label for="charge">Service Charge (per hour):</label>
                         <input type="number" step="0.01" name="charge" class="input3" value="{{ provider.charge }}" required>
                     </div>
-
                  
                     <div class="col-md-6">
                         <label for="working_hours">Working Hours:</label>
@@ -124,14 +130,12 @@
                         </select>
                     </div>
 
-                   
                     <div class="col-md-6">
                         <label for="rating">Rating:</label>
                         <input type="number" step="0.1" name="rating" class="input3" value="{{ provider.rating }}" required>
                     </div>
                 </div>
 
-                
                 <input type="submit" value="Update Service Provider">
             </form>
         </div>

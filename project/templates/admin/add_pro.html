@@ -46,6 +46,18 @@
           </ul>
         </div>
       </nav>
+
+      {% if messages %}
+    <div class="container mt-3">
+      {% for message in messages %}
+        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
     <div class="container">
         <h1>Add Service Provider</h1>
         <div class="form-container">
@@ -74,7 +86,7 @@
 
                     <div class="col-md-6">
                         <label for="experience">Experience (years):</label>
-                        <input type="number" name="experience" class="input3" required>
+                        <input type="number" name="experience" class="input3" min="1" required>
                     </div>
 
                     <div class="col-md-6">
@@ -120,6 +132,9 @@
             </form>
         </div>
     </div>
+
+  
+
     <footer class="footer">
         <div class="footer-section">
             <div class="footer-logo">QuickPick</div>

@@ -14,8 +14,6 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
 
-
-
 # Create your views here.
 
 def user_login(req):
@@ -104,8 +102,9 @@ def add_pro(req):
         des = req.POST.get("des")
         charge = req.POST.get("charge")
         working_hours = req.POST.get("working_hours")
-        
-        
+        if ServiceProvider.objects.filter(phone=phone).exists():
+            messages.error(req, "Phone number already exists! Please use a different one.")
+            return render(req, "admin/add_pro.html", {"categories": categories})
         ServiceProvider.objects.create(
             category=category,
             profile=profile,
@@ -124,12 +123,12 @@ def add_pro(req):
         categories = Category.objects.all()
         return render(req, "admin/add_pro.html", {"categories": categories})
     
+    
 def edit_pro(req, pid):
     try:
         provider = ServiceProvider.objects.get(id=pid)
     except ServiceProvider.DoesNotExist:
-       
-        return redirect('error_page') 
+        return redirect(admin_home) 
     categories = Category.objects.all()
     
     if req.method == "POST":
@@ -144,7 +143,9 @@ def edit_pro(req, pid):
         des = req.POST.get("des", provider.des)
         charge = req.POST.get("charge", provider.charge)
         working_hours = req.POST.get("working_hours", provider.working_hours)
-        
+        if ServiceProvider.objects.filter(phone=phone).exists():
+            messages.error(req, "Phone number already exists! Please use a different one.")
+            return render(req, "admin/edit_pro.html", {"categories": categories})
         provider.category = category
         provider.profile = profile
         provider.name = name
@@ -170,8 +171,6 @@ def delete_pro(req,pid):
     data.delete()
     return redirect(admin_home)
 
-
-
 def admin_bookings(req):
     """ Display pending bookings for the logged-in admin owner """
     if 'admin' in req.session:  
@@ -179,14 +178,10 @@ def admin_bookings(req):
         return render(req, 'admin/admin_bookings.html', {'bookings': bookings})
     return redirect(user_login)
 
-
-
 def confirm_booking(req, booking_id):
     """ Confirm a booking and send an email notification to the user """
     if 'admin' in req.session:
         booking = get_object_or_404(Booking, id=booking_id)
-        
-        # Calculate the advance payment (50% of the total charge for this example)
         booking.status = 'Confirmed'
         booking.payment_amount = booking.provider.charge * 0.2  
         booking.save()
@@ -195,7 +190,7 @@ def confirm_booking(req, booking_id):
             send_mail(
                 'Booking Confirmation',
                 f'Your booking with {booking.provider.name} on {booking.date} at {booking.time} has been confirmed. Please make an advance payment of {booking.payment_amount}.',
-                'your_email@example.com',  # Replace with your email address
+                'your_email@example.com',
                 [booking.user.email],
                 fail_silently=False,
             )
@@ -445,9 +440,6 @@ def view_details(request, id):
         return redirect(user_login)
 
 
-
-
-
 def book_now(request, provider_id):
     if 'user' in request.session:
         provider = get_object_or_404(ServiceProvider, id=provider_id)
@@ -501,8 +493,21 @@ def book_now(request, provider_id):
     else:
         return redirect(user_login)
 
+def cancel_booking(request, booking_id):
+    if 'user' in request.session:
+        booking = get_object_or_404(Booking, id=booking_id, user=request.user)
 
+        if booking.status == 'Pending':
+            booking.status = 'Canceled'
+            booking.delete()
+            messages.success(request, "Your booking has been canceled successfully.")
+        else:
+            messages.warning(request, "You can only cancel pending bookings.")
 
+        return redirect(user_bookings)
+    else:
+        return redirect(user_login)
+    
 def user_bookings(req):
     if 'user' in req.session:
         bookings = Booking.objects.filter(user=req.user).order_by('-date')
@@ -510,9 +515,6 @@ def user_bookings(req):
     else:
         return redirect(user_login)
     
-
-
-
 
 def order_payment(request, booking_id):
     try:
@@ -569,16 +571,10 @@ def callback(request):
     try:
        
         client.utility.verify_payment_signature(params)
-
-      
         booking = Booking.objects.get(id=request.POST['booking_id'])
-
-       
         booking.payment_status = 'Paid'
         booking.advance_paid = True  
         booking.save()
-
-        
         return redirect(user_bookings)
 
     except Exception as e:
