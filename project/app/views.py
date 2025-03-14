@@ -349,23 +349,128 @@ def deleteWishlist(req,pid):
         return redirect(user_login) 
 
 
+# def view_details(request, id):
+#     if 'user' in request.session:
+#         provider = get_object_or_404(ServiceProvider, pk=id)
+#         reviews = Review.objects.filter(provider=provider)
+
+#         if request.method == "POST":
+#             if 'date' in request.POST:
+#                 date = request.POST.get("date")
+#                 time = request.POST.get("time")
+#                 phone = request.POST.get("phone")
+#                 address = request.POST.get("address")
+
+#                 if not phone or not address:
+#                     messages.error(request, "Please fill all fields.")
+#                     return redirect(view_details, id=id)
+
+                
+#                 existing_booking = Booking.objects.filter(
+#                     provider=provider, date=date, time=time
+#                 ).exists()
+
+#                 if existing_booking:
+#                     messages.error(request, "This time slot is already booked. Please choose another time.")
+#                     return redirect(view_details, id=id)
+
+#                 booking = Booking.objects.create(
+#                     provider=provider,
+#                     user=request.user,  
+#                     date=date,
+#                     time=time,
+#                     phone=phone,
+#                     address=address,
+#                     status="Pending"
+#                 )
+
+#                 send_mail(
+#                     subject="Booking Request Received",
+#                     message=f"Dear {request.user.username},\n\n"
+#                             f"Your booking request with {provider.name} has been received and is pending confirmation.\n\n"
+#                             f"📅 Date: {booking.date}\n"
+#                             f"⏰ Time: {booking.time}\n"
+#                             f"📞 Phone: {booking.phone}\n"
+#                             f"🏠 Address: {booking.address}\n\n"
+#                             f"You will be notified once it is confirmed.\n\n"
+#                             f"Thank you for using our service!\n\n"
+#                             f"Best regards,\nYour Service Team",
+#                     from_email=settings.EMAIL_HOST_USER,
+#                     recipient_list=[request.user.email],
+#                     fail_silently=False,
+#                 )
+
+                
+#                 return redirect(user_bookings)
+
+#             elif 'review' in request.POST:
+#                 rating = request.POST.get("rating")
+#                 message = request.POST.get("message")
+
+#                 if not rating or int(rating) < 1 or int(rating) > 5:
+#                     messages.error(request, "Invalid rating. Please select between 1-5 stars.")
+#                     return redirect('view_details', id=id)
+
+#                 Review.objects.create(
+#                     provider=provider,
+#                     user=request.user,  
+#                     rating=int(rating),
+#                     message=message
+#                 )
+
+#                 send_mail(
+#                     subject="Thank You for Your Review!",
+#                     message=f"Dear {request.user.username},\n\n"
+#                             f"Thank you for leaving a review for {provider.name}.\n\n"
+#                             f"🌟 Your Rating: {rating} / 5\n"
+#                             f"💬 Your Review: \"{message}\"\n\n"
+#                             f"We appreciate your feedback and hope to serve you again!\n\n"
+#                             f"Best regards,\nYour Service Team",
+#                     from_email=settings.EMAIL_HOST_USER,
+#                     recipient_list=[request.user.email],
+#                     fail_silently=False,
+#                 )
+
+#                 messages.success(request, "Review submitted successfully!")
+#                 return redirect(view_details, id=id)
+
+#         return render(request, 'user/view_details.html', {'provider': provider, 'reviews': reviews})
+
+#     else:
+#         return redirect(user_login)
+
 def view_details(request, id):
     if 'user' in request.session:
         provider = get_object_or_404(ServiceProvider, pk=id)
         reviews = Review.objects.filter(provider=provider)
 
+        # Fetch user's saved addresses (which include phone numbers)
+        saved_addresses = Address.objects.filter(user=request.user)
+
         if request.method == "POST":
+            # Handle Booking Submission
             if 'date' in request.POST:
                 date = request.POST.get("date")
                 time = request.POST.get("time")
-                phone = request.POST.get("phone")
-                address = request.POST.get("address")
 
-                if not phone or not address:
-                    messages.error(request, "Please fill all fields.")
+                # Handle address selection (address & phone are together)
+                selected_address_id = request.POST.get("selected_address")
+                new_address_line = request.POST.get("new_address")
+                new_phone_number = request.POST.get("new_phone")
+
+                if selected_address_id:
+                    address = Address.objects.get(id=selected_address_id)
+                elif new_address_line and new_phone_number:
+                    address = Address.objects.create(
+                        user=request.user, 
+                        address_line=new_address_line, 
+                        phone_number=new_phone_number
+                    )
+                else:
+                    messages.error(request, "Please provide or select an address and phone number.")
                     return redirect(view_details, id=id)
 
-                
+                # Check for existing booking
                 existing_booking = Booking.objects.filter(
                     provider=provider, date=date, time=time
                 ).exists()
@@ -374,16 +479,18 @@ def view_details(request, id):
                     messages.error(request, "This time slot is already booked. Please choose another time.")
                     return redirect(view_details, id=id)
 
+                # Create booking
                 booking = Booking.objects.create(
                     provider=provider,
-                    user=request.user,  
+                    user=request.user,
                     date=date,
                     time=time,
-                    phone=phone,
-                    address=address,
+                    phone=address.phone_number,
+                    address=address.address_line,
                     status="Pending"
                 )
 
+                # Send booking confirmation email
                 send_mail(
                     subject="Booking Request Received",
                     message=f"Dear {request.user.username},\n\n"
@@ -400,24 +507,26 @@ def view_details(request, id):
                     fail_silently=False,
                 )
 
-                
                 return redirect(user_bookings)
 
+            # Handle Review Submission
             elif 'review' in request.POST:
                 rating = request.POST.get("rating")
                 message = request.POST.get("message")
 
                 if not rating or int(rating) < 1 or int(rating) > 5:
                     messages.error(request, "Invalid rating. Please select between 1-5 stars.")
-                    return redirect('view_details', id=id)
+                    return redirect(view_details, id=id)
 
+                # Create review
                 Review.objects.create(
                     provider=provider,
-                    user=request.user,  
+                    user=request.user,
                     rating=int(rating),
                     message=message
                 )
 
+                # Send review thank-you email
                 send_mail(
                     subject="Thank You for Your Review!",
                     message=f"Dear {request.user.username},\n\n"
@@ -434,23 +543,97 @@ def view_details(request, id):
                 messages.success(request, "Review submitted successfully!")
                 return redirect(view_details, id=id)
 
-        return render(request, 'user/view_details.html', {'provider': provider, 'reviews': reviews})
+        return render(request, 'user/view_details.html', {
+            'provider': provider,
+            'reviews': reviews,
+            'saved_addresses': saved_addresses
+        })
 
     else:
         return redirect(user_login)
 
+# def book_now(request, provider_id):
+#     if 'user' in request.session:
+#         provider = get_object_or_404(ServiceProvider, id=provider_id)
+
+#         if request.method == "POST":
+#             form = BookingForm(request.POST)
+#             if form.is_valid():
+#                 booking_date = form.cleaned_data['date']
+#                 booking_time = form.cleaned_data['time']
+
+               
+#                 existing_booking = Booking.objects.filter(
+#                     provider=provider, date=booking_date, time=booking_time
+#                 ).exists()
+
+#                 if existing_booking:
+#                     messages.error(request, "This time slot is already booked. Please choose another time.")
+#                     return redirect('book_now', provider_id=provider.id)
+
+                
+#                 booking = form.save(commit=False)
+#                 booking.provider = provider
+#                 booking.user = request.user  
+#                 booking.status = "Pending"  
+#                 booking.save()
+
+               
+#                 send_mail(
+#                     subject="Booking Request Received",
+#                     message=f"Dear {request.user.username},\n\n"
+#                             f"Your booking request with {provider.name} has been received and is pending confirmation.\n\n"
+#                             f"📅 Date: {booking.date}\n"
+#                             f"⏰ Time: {booking.time}\n"
+#                             f"📞 Phone: {booking.phone}\n"
+#                             f"🏠 Address: {booking.address}\n\n"
+#                             f"You will be notified once it is confirmed.\n\n"
+#                             f"Thank you for using our service!\n\n"
+#                             f"Best regards,\nYour Service Team",
+#                     from_email=settings.EMAIL_HOST_USER,
+#                     recipient_list=[request.user.email],
+#                     fail_silently=False,
+#                 )
+
+            
+#                 return redirect(user_bookings)  
+
+#         else:
+#             form = BookingForm()
+
+#         return render(request, 'user/book_now.html', {'form': form, 'provider': provider})
+#     else:
+#         return redirect(user_login)
+
+def cancel_booking(request, booking_id):
+    if 'user' in request.session:
+        booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+
+        if booking.status == 'Pending':
+            booking.status = 'Canceled'
+            booking.delete()
+            messages.success(request, "Your booking has been canceled successfully.")
+        else:
+            messages.warning(request, "You can only cancel pending bookings.")
+
+        return redirect(user_bookings)
+    else:
+        return redirect(user_login)
 
 def book_now(request, provider_id):
     if 'user' in request.session:
         provider = get_object_or_404(ServiceProvider, id=provider_id)
 
         if request.method == "POST":
-            form = BookingForm(request.POST)
+            form = BookingForm(request.POST, user=request.user)
             if form.is_valid():
                 booking_date = form.cleaned_data['date']
                 booking_time = form.cleaned_data['time']
+                selected_phone = form.cleaned_data.get('phone')
+                new_phone = form.cleaned_data.get('new_phone')
+                selected_address = form.cleaned_data.get('address')
+                new_address = form.cleaned_data.get('new_address')
 
-               
                 existing_booking = Booking.objects.filter(
                     provider=provider, date=booking_date, time=booking_time
                 ).exists()
@@ -459,14 +642,32 @@ def book_now(request, provider_id):
                     messages.error(request, "This time slot is already booked. Please choose another time.")
                     return redirect('book_now', provider_id=provider.id)
 
-                
                 booking = form.save(commit=False)
                 booking.provider = provider
-                booking.user = request.user  
-                booking.status = "Pending"  
+                booking.user = request.user
+                booking.status = "Pending"
+
+                # Handle new phone number or selected phone
+                if new_phone:
+                    booking.phone = new_phone
+                else:
+                    booking.phone = selected_phone
+
+                # Handle new address or selected address
+                if new_address:
+                    # Save new address in the Address model
+                    address_obj, created = Address.objects.get_or_create(
+                        user=request.user,
+                        address_line=new_address,
+                        phone_number=booking.phone  # Use the selected or new phone
+                    )
+                    booking.address = new_address
+                else:
+                    address_obj = Address.objects.get(id=selected_address)
+                    booking.address = address_obj.address_line
+
                 booking.save()
 
-               
                 send_mail(
                     subject="Booking Request Received",
                     message=f"Dear {request.user.username},\n\n"
@@ -483,30 +684,15 @@ def book_now(request, provider_id):
                     fail_silently=False,
                 )
 
-            
-                return redirect(user_bookings)  
+                return redirect(user_bookings)
 
         else:
-            form = BookingForm()
+            form = BookingForm(user=request.user)
 
         return render(request, 'user/book_now.html', {'form': form, 'provider': provider})
     else:
         return redirect(user_login)
 
-def cancel_booking(request, booking_id):
-    if 'user' in request.session:
-        booking = get_object_or_404(Booking, id=booking_id, user=request.user)
-
-        if booking.status == 'Pending':
-            booking.status = 'Canceled'
-            booking.delete()
-            messages.success(request, "Your booking has been canceled successfully.")
-        else:
-            messages.warning(request, "You can only cancel pending bookings.")
-
-        return redirect(user_bookings)
-    else:
-        return redirect(user_login)
     
 def user_bookings(req):
     if 'user' in req.session:

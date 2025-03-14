@@ -89,15 +89,24 @@
                         <label for="time" class="form-label">Time Period</label>
                         <input type="time" name="time" class="form-control" id="time" required>
                     </div>
-                    <div class="mb-3">
-                        <label for="phone" class="form-label">Phone Number</label>
-                        <input type="text" name="phone" class="form-control" required pattern="[6-9]{1}[0-9]{9}">
-                        {{ form.phone.errors }}
+                    <label class="form-label">Select Saved Address & Phone:</label>
+                    <select class="form-control" name="selected_address" id="selected_address">
+                        <option value="">-- Select an Address --</option>
+                        {% for addr in saved_addresses %}
+                            <option value="{{ addr.id }}">{{ addr.address_line }} ({{ addr.phone_number }})</option>
+                        {% endfor %}
+                    </select>
 
-                    </div>
+                    <p class="text-muted mt-2">OR Add a New Address</p>
+
                     <div class="mb-3">
-                        <label for="address" class="form-label">Address</label>
-                        <textarea name="address" class="form-control" required></textarea>
+                        <label class="form-label">New Address</label>
+                        <input type="text" class="form-control" name="new_address" id="new_address" placeholder="Enter new address">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">New Phone Number</label>
+                        <input type="text" class="form-control" name="new_phone" id="new_phone" placeholder="Enter new phone number">
                     </div>
                     <button type="submit" class="btn-book">Book Now</button>
                 </form>

@@ -48,14 +48,15 @@
     </nav>
     {% if messages %}
     <div class="container mt-3">
-      {% for message in messages %}
-        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+            role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-      {% endfor %}
+        {% endfor %}
     </div>
-  {% endif %}
+    {% endif %}
     <div class="container mt-5">
         <h2 class="text-center mb-4">My Bookings</h2>
 
@@ -82,13 +83,16 @@
                         {% else %}
                         <p style="color:green;">Payment done</p>
                         {% endif %}
+                        {% elif booking.status == "Declined" %}
+                        <span class="badge bg-danger">Declined</span>
                         {% else %}
                         <span class="badge bg-warning">Pending</span>
                         {% endif %}
                         {% if booking.status == 'Pending' %}
                         <form action="{% url 'cancel_booking' booking.id %}" method="post">
                             {% csrf_token %}
-                            <button style="border-color:red;background-color:red;border-radius:10px; margin-top:10px;" type="submit">Cancel Booking</button>
+                            <button style="border-color:red;background-color:red;border-radius:10px; margin-top:10px;"
+                                type="submit">Cancel Booking</button>
                         </form>
                         {% endif %}
 

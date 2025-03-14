@@ -121,7 +121,7 @@
     <div class="container">
         <h2 class="text-center">Book {{ provider.name }}</h2>
         <img style="border-radius:20%; height:200px;width:240px;" src="{{provider.profile.url}}" alt="" >
- {% if messages %}
+    {% if messages %}
         {% for message in messages %}
             <div class="alert alert-warning">{{ message }}</div>
         {% endfor %}
@@ -130,13 +130,23 @@
             {% csrf_token %}
             
             <div class="mb-3">
-                <label>Phone Number</label>
+                <label>Select Phone Number</label>
                 {{ form.phone }}
             </div>
-
+            
             <div class="mb-3">
-                <label>Address</label>
+                <label>Or Enter a New Phone Number</label>
+                {{ form.new_phone }}
+            </div>
+            
+            <div class="mb-3">
+                <label>Select Address</label>
                 {{ form.address }}
+            </div>
+            
+            <div class="mb-3">
+                <label>Or Enter a New Address</label>
+                {{ form.new_address }}
             </div>
 
             <div class="mb-3">
