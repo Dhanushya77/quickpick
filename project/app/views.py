@@ -12,6 +12,7 @@ from .forms import BookingForm
 import razorpay 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
 
 
 # Create your views here.
@@ -40,13 +41,26 @@ def user_login(req):
         return render(req,'login.html')
     
 
-def user_logout(req):
-    if 'user' or 'admin' in req.session:
-        logout(req)
-        req.session.flush()
-        return redirect(user_login)
+def user_logout(request):
+ 
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            logout(request)
+            return redirect(user_login) 
+        else:
+           
+            return HttpResponse("""
+                <script type="text/javascript">
+                    var confirmation = confirm('Are you sure you want to log out?');
+                    if (confirmation) {
+                        window.location.href = '/logout/';
+                    } else {
+                        window.location.href = '/';  // Or wherever you want to redirect
+                    }
+                </script>
+            """)
     else:
-        return redirect(user_login)
+        return redirect(user_login)  
 
 
 # --------------------admin----------------------------

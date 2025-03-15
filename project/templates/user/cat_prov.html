@@ -55,6 +55,7 @@
         {% if service_providers %}
         {% for provider in service_providers %}
         <div class="provider-card">
+          <a style="text-decoration:none; color:black;" href="../../view_details/{{provider.pk}}">
             <img src="{{ provider.profile.url }}" alt="{{ provider.name }}">
             <div class="provider-card-content">
                 <h3>{{ provider.name }}</h3>
@@ -70,10 +71,11 @@
                 <p class="charge">Charge: ${{ provider.charge }}</p>
 
                 <div class="btn-container">
-                    <a href="../../edit_pro/{{provider.id}}" class="btn">Edit</a>
-                    <a href="../../delete_pro/{{provider.id}}" class="btn">Delete</a>
+                    <a href="../../addWishlist/{{provider.id}}" class="btn">Add to Wishlist</a>
+                    <a href="../../book-now/{{provider.id}}" class="btn">Book now</a>
                 </div>
             </div>
+          </a>
         </div>
         {% endfor %}
         {% else %}
