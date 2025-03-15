@@ -4,9 +4,11 @@ from . import views
 urlpatterns = [
     # path('',views.dummy_home),
     path('login',views.user_login),
-    path('logout',views.user_logout),
+    path('logout',views.user_logout,name='logout'),
     path('register',views.register),
     path('otp',views.otp_confirmation),
+    path('quick_logout',views.quick_logout),
+
 
 
     # ---------------admin----------------

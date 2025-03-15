@@ -41,26 +41,37 @@ def user_login(req):
         return render(req,'login.html')
     
 
+
+
 def user_logout(request):
- 
     if request.user.is_authenticated:
         if request.method == 'POST':
             logout(request)
             return redirect(user_login) 
         else:
-           
+            
             return HttpResponse("""
                 <script type="text/javascript">
                     var confirmation = confirm('Are you sure you want to log out?');
                     if (confirmation) {
-                        window.location.href = '/logout/';
+                        // Use the URL name for logout here
+                        window.location.href = "quick_logout";
                     } else {
                         window.location.href = '/';  // Or wherever you want to redirect
                     }
                 </script>
             """)
     else:
-        return redirect(user_login)  
+        return redirect(user_login) 
+
+def quick_logout(req):
+    
+    if 'user' or 'admin' in req.session:
+        logout(req)
+        req.session.flush()
+        return redirect(user_login)
+    else:
+        return redirect(user_login)
 
 
 # --------------------admin----------------------------
